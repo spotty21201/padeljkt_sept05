@@ -16,3 +16,6 @@ Minimal dark UI with padel-green accents. Investor-grade calculator for CAPEX, O
 
 - Import repo into Vercel (Next.js preset). No env vars required for MVP.
 
+## Branding
+
+- Place your Kolabs.Design logo at `public/logo.png` (recommended PNG, white on transparent). The header and PDF export will pick it up automatically.
