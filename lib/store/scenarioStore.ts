@@ -8,7 +8,13 @@ type State = {
   scenarios: Scenario[];
   activeId: string | null;
   selectedCompareIds: string[];
+  hasHydrated: boolean;
+  hasSeeded: boolean;
   setActive: (id: string) => void;
+  setHasHydrated: (v: boolean) => void;
+  setHasSeeded: (v: boolean) => void;
+  addScenario: (s: Scenario) => void;
+  addScenarios: (arr: Scenario[]) => void;
   addNew: () => void;
   duplicate: (id: string) => void;
   remove: (id: string) => void;
@@ -23,7 +29,19 @@ export const useScenarioStore = create<State>()(
       scenarios: [],
       activeId: null,
       selectedCompareIds: [],
+      hasHydrated: false,
+      hasSeeded: false,
       setActive: (id) => set({ activeId: id }),
+      setHasHydrated: (v) => set({ hasHydrated: v }),
+      setHasSeeded: (v) => set({ hasSeeded: v }),
+      addScenario: (s) => set(({ scenarios }) => (
+        scenarios.some(x => x.id === s.id) ? { scenarios } : { scenarios: [s, ...scenarios] }
+      )),
+      addScenarios: (arr) => set(({ scenarios }) => {
+        const byId = new Map(scenarios.map(s => [s.id, s]));
+        for (const s of arr) { if(!byId.has(s.id)) byId.set(s.id, s); }
+        return { scenarios: Array.from(byId.values()) } as any;
+      }),
       addNew: () =>
         set(() => {
           const s = createBaseScenario();
@@ -69,6 +87,11 @@ export const useScenarioStore = create<State>()(
         return { selectedCompareIds: [...selected, id] } as any;
       }),
     }),
-    { name: "padeljkt:scenarios" }
+    {
+      name: "padeljkt:scenarios",
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      }
+    }
   )
 );

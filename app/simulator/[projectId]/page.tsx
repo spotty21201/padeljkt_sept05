@@ -20,11 +20,12 @@ import { ScenarioCompareChart } from "@/components/charts/ScenarioCompareChart";
 import { generatePdfFromScenario } from "@/lib/pdf/generate";
 
 export default function SimulatorPage(){
-  const { scenarios, activeId, update, addNew } = useScenarioStore();
+  const { scenarios, activeId, update, addNew, addScenario, hasHydrated, hasSeeded, setHasSeeded } = useScenarioStore();
   const active = useMemo(()=> scenarios.find(s=> s.id === activeId) || scenarios[0], [scenarios, activeId]);
 
-  // Import scenario via URL param ?s=<b64url>; seed one if none
+  // Import scenario via URL param once hydrated; seed once if empty
   useEffect(()=>{
+    if(!hasHydrated) return; // wait for persist hydration
     if(typeof window === 'undefined') return;
     const url = new URL(window.location.href);
     const sParam = url.searchParams.get('s');
@@ -32,15 +33,18 @@ export default function SimulatorPage(){
       try{
         const obj = decodeScenarioParam(sParam) as Scenario;
         if(obj && obj.id){
-          useScenarioStore.setState((prev)=> ({ scenarios: [obj, ...prev.scenarios], activeId: obj.id }));
+          addScenario(obj); // idempotent by id
+          useScenarioStore.setState({ activeId: obj.id });
           url.searchParams.delete('s');
           window.history.replaceState({}, '', url.toString());
         }
       }catch{}
     }
-    if(scenarios.length===0){ addNew(); }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[]);
+    if(!hasSeeded && scenarios.length===0){
+      addNew();
+      setHasSeeded(true);
+    }
+  }, [hasHydrated]);
 
   const results = useMemo(()=> active ? calcResults(active) : null, [active]);
   if(!active || !results) return <div className="p-8">Loading…</div>;
