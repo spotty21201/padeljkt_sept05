@@ -32,7 +32,7 @@ export function OpexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:
             }}>Remove</button>
           </div>
         ))}
-        <button className="button-share px-3 py-1" title="Add Staff" onClick={()=> set({ staff: [...ox.staff, { role: "New Role", monthly: 5_000_000 }] })}>➕ Add Staff</button>
+        <button className="button-share px-3 py-1" onClick={()=> set({ staff: [...ox.staff, { role: "New Role", monthly: 5_000_000 }] })}>Add Staff</button>
       </div>
       <div className="grid md:grid-cols-3 gap-3">
         <MoneyInput label="Utilities Rp/sqm/mo" value={ox.utilitiesRpPerSqmPerMonth} onChange={(v)=> set({ utilitiesRpPerSqmPerMonth: v })} />
