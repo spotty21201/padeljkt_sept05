@@ -9,7 +9,10 @@ import { ComposedChart, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Toolti
 import { formatYears } from "@/lib/format/format";
 import { formatIDRShort } from "@/lib/format/currency";
 
-export function Report({ scenario, results, exportedAtISO }:{ scenario: Scenario; results: Results; exportedAtISO: string }){
+type ReportOptions = { density?: "condensed"|"detailed"; includeCharts?: boolean; includeCompare?: boolean; includeQR?: boolean };
+
+export function Report({ scenario, results, exportedAtISO, options }: { scenario: Scenario; results: Results; exportedAtISO: string; options?: ReportOptions }){
+  const { density = "condensed", includeCharts = true, includeCompare = density!=="condensed", includeQR = false } = options||{};
   const { scenarios, selectedCompareIds } = useScenarioStore.getState();
   const chosen = (selectedCompareIds?.length>0 ? selectedCompareIds.map(id=> scenarios.find(s=> s.id===id)).filter(Boolean) : scenarios.slice(0,3)) as Scenario[];
   const compareData = chosen.map((s, idx)=>{
@@ -58,27 +61,29 @@ export function Report({ scenario, results, exportedAtISO }:{ scenario: Scenario
       </div>
 
       {/* Charts */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap: 12, marginTop: 16 }}>
-        <div>
-          <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>ROI vs Courts</div>
-          <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
-            <div style={{ height: 280, padding: 12 }}>
-              <RoiVsCourtsChart data={results.charts.roiVsCourts} current={scenario.courts.courts} />
+      {includeCharts && (
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap: 12, marginTop: 16 }}>
+          <div>
+            <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>ROI vs Courts</div>
+            <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
+              <div style={{ height: 300, padding: 12 }}>
+                <RoiVsCourtsChart data={results.charts.roiVsCourts} current={scenario.courts.courts} variant="light" tickSize={11} />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>Payback Timeline</div>
+            <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
+              <div style={{ height: 300, padding: 12 }}>
+                <PaybackTimelineChart data={results.charts.bepTimeline} bepYear={results.charts.bepYear} variant="light" tickSize={11} />
+              </div>
             </div>
           </div>
         </div>
-        <div>
-          <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>Payback Timeline</div>
-          <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
-            <div style={{ height: 280, padding: 12 }}>
-              <PaybackTimelineChart data={results.charts.bepTimeline} bepYear={results.charts.bepYear} />
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
 
-      {/* Outcomes (ROI & Payback) if scenarios available */}
-      {compareData.length > 0 && (
+      {/* Outcomes (ROI & Payback) if scenarios available (page 2 for detailed) */}
+      {includeCompare && compareData.length > 0 && (
         <div style={{ marginTop: 16 }}>
           <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>Outcomes (ROI & Payback)</div>
           <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>

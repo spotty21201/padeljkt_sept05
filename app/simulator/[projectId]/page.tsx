@@ -122,7 +122,7 @@ export default function SimulatorPage(){
       </div>
 
       <div className="px-6 flex gap-3 items-center">
-        <button className="button-accent px-4 py-2 rounded-xl" onClick={()=> generatePdfFromScenario(active)}>Export PDF</button>
+        <button className="button-accent px-4 py-2 rounded-xl" onClick={()=> generatePdfFromScenario(active, { density: "condensed", includeCharts: true, includeCompare: true })}>Export PDF</button>
         <a className="button-xls px-4 py-2 rounded-xl" href={`/api/export/xls?s=${encodeScenarioToParam(active)}`}>Export XLS</a>
         <button className="button-share px-4 py-2 rounded-xl" onClick={()=>{
           const link = `${window.location.origin}/simulator/sample?s=${encodeScenarioToParam(active)}`;

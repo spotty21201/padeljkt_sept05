@@ -7,7 +7,9 @@ import { Report } from "@/lib/pdf/Report";
 import { calcResults } from "@/lib/calc/model";
 import type { Scenario } from "@/lib/types";
 
-export async function generatePdfFromScenario(scenario: Scenario){
+export type GenerateOptions = { density?: "condensed"|"detailed"; includeCharts?: boolean; includeCompare?: boolean; includeQR?: boolean };
+
+export async function generatePdfFromScenario(scenario: Scenario, options: GenerateOptions = { density: "condensed", includeCharts: true, includeCompare: false, includeQR: false }){
   const container = document.createElement('div');
   container.style.position = 'fixed';
   container.style.left = '-99999px';
@@ -18,20 +20,20 @@ export async function generatePdfFromScenario(scenario: Scenario){
   const root = createRoot(container);
   const results = calcResults(scenario);
   const ts = new Date().toISOString();
-  root.render(React.createElement(Report, { scenario, results, exportedAtISO: ts }));
+  root.render(React.createElement(Report, { scenario, results, exportedAtISO: ts, options }));
   // wait next paint
   await new Promise(r=> setTimeout(r, 150));
 
-  const pixelRatio = Math.min(3, window.devicePixelRatio || 2);
-  const canvas = await html2canvas(container, { backgroundColor: '#ffffff', scale: pixelRatio, useCORS: true });
+  const pixelRatio = Math.max(2, Math.min(3, window.devicePixelRatio || 2));
+  const canvas = await html2canvas(container, { backgroundColor: '#ffffff', scale: pixelRatio, useCORS: true, logging: false });
   const imgData = canvas.toDataURL('image/jpeg', 0.92);
 
   // PDF sizing
   const mm = 1; // dummy
   const ptPerMm = 72/25.4;
   const a4w = 210*ptPerMm; const a4h = 297*ptPerMm;
-  const margin = 20*ptPerMm; // 20mm
-  const printW = a4w - 2*margin; const printH = a4h - 2*margin;
+  const marginL = 24*ptPerMm, marginR = 24*ptPerMm, marginT = 20*ptPerMm, marginB = 20*ptPerMm;
+  const printW = a4w - (marginL + marginR); const printH = a4h - (marginT + marginB);
 
   const imgWpx = canvas.width; const imgHpx = canvas.height;
   const pxPerPt = imgWpx / printW; // how many canvas pixels per printable point
@@ -52,7 +54,7 @@ export async function generatePdfFromScenario(scenario: Scenario){
     pageCtx.drawImage(canvas, 0, offset, imgWpx, sliceH, 0, 0, imgWpx, sliceH);
     const pageImg = pageCanvas.toDataURL('image/jpeg', 0.92);
     if(page>0) pdf.addPage();
-    pdf.addImage(pageImg, 'JPEG', margin, margin, printW, (sliceH/pxPerPt));
+    pdf.addImage(pageImg, 'JPEG', marginL, marginT, printW, (sliceH/pxPerPt));
     offset += sliceH;
     page++;
   }
@@ -61,4 +63,3 @@ export async function generatePdfFromScenario(scenario: Scenario){
   document.body.removeChild(container);
   pdf.save(`PadelJKT_FS_Engine_${new Date().toISOString().slice(0,19)}.pdf`);
 }
-
