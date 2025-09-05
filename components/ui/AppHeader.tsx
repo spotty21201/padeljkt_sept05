@@ -10,6 +10,7 @@ export type AppHeaderProps = {
   scenarioName?: string;
   onScenarioClick?: () => void;
   className?: string;
+  highlight?: string; // optional substring of appName to render in accent color
 };
 
 export default function AppHeader({
@@ -21,14 +22,30 @@ export default function AppHeader({
   scenarioName,
   onScenarioClick,
   className = "",
+  highlight,
 }: AppHeaderProps) {
+  const Title = () => {
+    if (highlight && appName.includes(highlight)) {
+      const idx = appName.indexOf(highlight);
+      const before = appName.slice(0, idx);
+      const after = appName.slice(idx + highlight.length);
+      return (
+        <>
+          {before}
+          <span className="text-[color:var(--accent)]">{highlight}</span>
+          {after}
+        </>
+      );
+    }
+    return <>{appName}</>;
+  };
   return (
     <header className={`w-full bg-[color:var(--header-bg)] ${className}`} role="banner">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8 py-4 md:py-6 flex items-start justify-between">
         {/* Left cluster */}
         <div className="flex flex-col gap-1.5 md:gap-2">
           <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.01em] text-[color:var(--fg)]">
-            {appName}
+            <Title />
           </h1>
           <p className="text-base md:text-lg text-[color:var(--fg-muted)]">
             {tagline}
@@ -76,4 +93,3 @@ export default function AppHeader({
     </header>
   );
 }
-

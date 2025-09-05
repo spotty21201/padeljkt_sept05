@@ -48,6 +48,7 @@ export default function SimulatorPage(){
         tagline="Padel meets profit: predictive ROI and feasibility."
         version="v0.9"
         credits="by HDA × KOLABS.DESIGN × AIM"
+        highlight="PadelJKT"
         scenarioName={active.name}
         onScenarioClick={() => {
           const el = document.getElementById("scenario-panel");
