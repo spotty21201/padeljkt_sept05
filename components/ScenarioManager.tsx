@@ -14,15 +14,30 @@ export function ScenarioManager(){
         </div>
       } />
       <div className="space-y-2">
-        {scenarios.map(s => (
-          <div key={s.id} className={`flex items-center gap-2 p-2 rounded-xl ${s.id===activeId? 'bg-white/5':''}`}>
-            <input className="flex-1 input bg-transparent" value={s.name}
-              onChange={(e)=> rename(s.id, e.currentTarget.value)} />
-            <button className="button-accent btn-sm" onClick={()=> setActive(s.id)}>Set Active</button>
-            <button className="button-share btn-sm" onClick={()=> duplicate(s.id)}>Duplicate</button>
-            <button className="button-share btn-sm" onClick={()=> remove(s.id)}>Delete</button>
-          </div>
-        ))}
+        {scenarios.map(s => {
+          const isActive = s.id === activeId;
+          const rowClass = isActive
+            ? "bg-ink-700 hover:bg-ink-600 border border-accent-500 shadow-[0_0_8px_2px_rgba(182,255,59,0.25)] text-text-hi font-semibold"
+            : "bg-ink-800 hover:bg-ink-700 border border-transparent text-text-base";
+          return (
+            <div
+              key={s.id}
+              className={`flex items-center justify-between rounded-lg px-3 py-2 transition-colors ${rowClass}`}
+              aria-current={isActive ? "true" : undefined}
+            >
+              <input
+                className={`flex-1 bg-transparent outline-none ${isActive ? 'text-text-hi' : 'text-text-base'}`}
+                value={s.name}
+                onChange={(e)=> rename(s.id, e.currentTarget.value)}
+              />
+              <div className="flex items-center gap-2 ml-3">
+                <button className="button-accent btn-sm" onClick={()=> setActive(s.id)}>Set Active</button>
+                <button className="button-share btn-sm" onClick={()=> duplicate(s.id)}>Duplicate</button>
+                <button className="button-share btn-sm" onClick={()=> remove(s.id)}>Delete</button>
+              </div>
+            </div>
+          );
+        })}
         {scenarios.length === 0 && (
           <div className="text-sm text-muted-300">No scenarios yet. Click New to create one.</div>
         )}
