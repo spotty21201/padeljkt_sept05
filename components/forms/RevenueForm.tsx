@@ -2,13 +2,14 @@
 import type { Scenario } from "@/lib/types";
 import { MoneyInput } from "@/components/inputs/MoneyInput";
 import { HelpTooltip } from "@/components/HelpTooltip";
+import SectionHeading from "@/components/ui/SectionHeading";
 
 export function RevenueForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const rev = scenario.rev;
   const set = (patch: Partial<Scenario["rev"]>)=> onPatch({ rev: { ...rev, ...patch } });
   return (
-    <div className="card p-5 space-y-4">
-      <h3 className="text-xl">Revenues</h3>
+    <div className="card p-5 space-y-4" aria-labelledby="heading-revenues">
+      <SectionHeading id="heading-revenues" title="Revenues" />
       <div className="grid md:grid-cols-2 gap-3">
         <label className="block text-base">
           <span className="text-muted-300">Members</span>

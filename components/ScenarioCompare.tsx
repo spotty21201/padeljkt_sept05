@@ -1,6 +1,7 @@
 "use client";
 import { calcResults } from "@/lib/calc/model";
 import { formatIDRShort } from "@/lib/format/currency";
+import SectionHeading from "@/components/ui/SectionHeading";
 import type { Scenario } from "@/lib/types";
 
 type Row = { label: string; fmt?: (v:number)=>string; key: keyof ReturnType<typeof calcResults> };
@@ -18,8 +19,8 @@ export function ScenarioCompare({ scenarios }:{ scenarios: { name:string; s: Sce
   ];
 
   return (
-    <section className="card p-4">
-      <h2 className="mb-3">Scenario Compare</h2>
+    <section className="card p-4" aria-labelledby="heading-compare-table">
+      <SectionHeading id="heading-compare-table" title="Scenario Compare" />
       <div className="overflow-x-auto">
         <table className="w-full text-sm striped">
           <thead className="text-muted-300">

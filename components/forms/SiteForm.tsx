@@ -2,12 +2,13 @@
 import { RatioSliders } from "@/components/inputs/RatioSliders";
 import type { Scenario } from "@/lib/types";
 import { HelpTooltip } from "@/components/HelpTooltip";
+import SectionHeading from "@/components/ui/SectionHeading";
 
 export function SiteForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const r = scenario.ratios;
   return (
-    <div className="card p-5 space-y-4">
-      <h3 className="text-xl">Site & Ratios</h3>
+    <div className="card p-5 space-y-4" aria-labelledby="heading-site-ratios">
+      <SectionHeading id="heading-site-ratios" title="Site & Ratios" help="Ratios auto-normalize to 100%." />
       <label className="block text-base">
         <span className="text-muted-300">Site Area (sqm)</span>
         <input type="number" className="w-full mt-1 input" value={scenario.siteArea}

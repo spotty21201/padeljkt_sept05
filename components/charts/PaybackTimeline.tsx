@@ -11,7 +11,7 @@ export function PaybackTimelineChart({ data, bepYear }:{ data:{ year:number; cum
   return (
     <div className="card p-4 h-72" aria-label={title}>
       <h3 className="sr-only">{title}</h3>
-      <div className="text-base mb-2" style={{ color: axisColor }}>{title}</div>
+      <div className="text-base mb-2 text-text-base" style={{ color: axisColor }}>{title}</div>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={formatted} margin={{ top:16, right:16, bottom:8, left:16 }}>
           <CartesianGrid stroke={gridColor} />

@@ -1,6 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { useScenarioStore } from "@/lib/store/scenarioStore";
+import SectionHeading from "@/components/ui/SectionHeading";
 
 export function ComparePicker(){
   const { scenarios, selectedCompareIds, toggleCompare } = useScenarioStore();
@@ -9,11 +10,8 @@ export function ComparePicker(){
   const list = useMemo(()=> scenarios, [scenarios]);
 
   return (
-    <section className="card p-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg">Compare Selection</h3>
-        <div className="text-sm text-muted-300">{count}/3 selected</div>
-      </div>
+    <section className="card p-4" aria-labelledby="heading-compare-picker">
+      <SectionHeading id="heading-compare-picker" title="Compare Selection" rightSlot={<div className="text-sm text-text-mut">{count}/3 selected</div>} />
       <div className="mt-2 grid md:grid-cols-2 gap-2">
         {list.map(s => {
           const checked = selectedCompareIds.includes(s.id);
@@ -34,4 +32,3 @@ export function ComparePicker(){
     </section>
   );
 }
-

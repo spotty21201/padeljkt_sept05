@@ -23,7 +23,7 @@
 html, body { background: var(--ink-900); color: var(--text-100); }
 
 .button-accent { background: var(--padel-green); color: #0B0B0B; border-radius: var(--radius); }
-.card { background: var(--ink-700); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.06); }
+.card { background: #141922; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.06); }
 
 /* Header bar */
 .header-bar { background: var(--ink-700); border-bottom: 1px solid rgba(255,255,255,0.06); }

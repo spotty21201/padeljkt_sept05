@@ -2,13 +2,14 @@
 import type { Scenario } from "@/lib/types";
 import { MoneyInput } from "@/components/inputs/MoneyInput";
 import { HelpTooltip } from "@/components/HelpTooltip";
+import SectionHeading from "@/components/ui/SectionHeading";
 
 export function CapexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const cx = scenario.capex;
   const set = (patch: Partial<Scenario["capex"]>)=> onPatch({ capex: { ...cx, ...patch } });
   return (
-    <div className="card p-5 space-y-4">
-      <h3 className="text-xl">CAPEX</h3>
+    <div className="card p-5 space-y-4" aria-labelledby="heading-capex">
+      <SectionHeading id="heading-capex" title="CAPEX" />
       <label className="block text-base">
         <span className="text-muted-300 inline-flex items-center">Land Lease Method <HelpTooltip text="Choose a flat upfront lease or a per-sqm per-year basis with years." /></span>
         <select className="w-full mt-1 select" value={(cx.landLease as any).method}

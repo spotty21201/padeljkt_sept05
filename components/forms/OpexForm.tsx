@@ -2,13 +2,14 @@
 import type { Scenario } from "@/lib/types";
 import { MoneyInput } from "@/components/inputs/MoneyInput";
 import { HelpTooltip } from "@/components/HelpTooltip";
+import SectionHeading from "@/components/ui/SectionHeading";
 
 export function OpexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const ox = scenario.opex;
   const set = (patch: Partial<Scenario["opex"]>)=> onPatch({ opex: { ...ox, ...patch } });
   return (
-    <div className="card p-5 space-y-4">
-      <h3 className="text-xl">OPEX</h3>
+    <div className="card p-5 space-y-4" aria-labelledby="heading-opex">
+      <SectionHeading id="heading-opex" title="OPEX" />
       <div className="space-y-2">
         <div className="text-sm text-muted-300">Staff</div>
         {ox.staff.map((line, idx)=> (

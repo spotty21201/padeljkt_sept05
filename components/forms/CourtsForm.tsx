@@ -2,14 +2,15 @@
 import type { Scenario } from "@/lib/types";
 import { MoneyInput } from "@/components/inputs/MoneyInput";
 import { HelpTooltip } from "@/components/HelpTooltip";
+import SectionHeading from "@/components/ui/SectionHeading";
 
 export function CourtsForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const c = scenario.courts;
   const risk = c.occupancyPct < 50;
   const maxCourts = Math.max(0, Math.floor((scenario.siteArea * (scenario.ratios.courtsPct/100)) / 250));
   return (
-    <div className="card p-5 space-y-4">
-      <h3 className="text-xl">Courts</h3>
+    <div className="card p-5 space-y-4" aria-labelledby="heading-courts">
+      <SectionHeading id="heading-courts" title="Courts" help="Max courts based on site & ratios shown below." />
       <div className="grid md:grid-cols-2 gap-3">
         <label className="block text-base">
           <span className="text-muted-300"># Courts</span>
