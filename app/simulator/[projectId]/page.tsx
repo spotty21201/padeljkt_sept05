@@ -41,26 +41,41 @@ export default function SimulatorPage(){
   if(!active || !results) return <div className="p-8">Loading…</div>;
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-semibold">PadelJKT — {active.name}</h1>
-      <p className="text-sm text-muted-300">Predictive design &amp; yield analysis for padel venues</p>
-      <p className="text-sm text-muted-300">Model your padel club in minutes. Start from realistic defaults, then tune to match your land and strategy. Export a board-ready summary.</p>
+    <div className="space-y-6">
+      <header className="header-bar px-6 py-5 flex items-center justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-semibold">PadelJKT</h1>
+            <span className="pill">Scenario: {active.name}</span>
+          </div>
+          <div className="text-base text-muted-300">Feasibility &amp; ROI modeling for padel clubs</div>
+          <div className="text-sm text-muted-300">v0.9 by Kolabs.Design × HDA × AIM</div>
+        </div>
+        <div className="flex items-center gap-3">
+          <img src="/logo.svg" alt="Kolabs.Design" width="120" height="28" onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}} />
+          <span className="text-muted-300">Kolabs.Design</span>
+        </div>
+      </header>
 
-      <ScenarioManager />
+      <div className="px-6">
+        <ScenarioManager />
+      </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
+      <div className="px-6 grid lg:grid-cols-2 gap-4">
         <SiteForm scenario={active} onPatch={(p)=> update(active.id, p)} />
         <CourtsForm scenario={active} onPatch={(p)=> update(active.id, p)} />
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
+      <div className="px-6 grid lg:grid-cols-2 gap-4">
         <RevenueForm scenario={active} onPatch={(p)=> update(active.id, p)} />
         <CapexForm scenario={active} onPatch={(p)=> update(active.id, p)} />
       </div>
 
-      <OpexForm scenario={active} onPatch={(p)=> update(active.id, p)} />
+      <div className="px-6">
+        <OpexForm scenario={active} onPatch={(p)=> update(active.id, p)} />
+      </div>
 
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="px-6 grid md:grid-cols-3 gap-4">
         <div className="card p-4">
           <div className="text-sm text-muted-300">CAPEX</div>
           <div className="text-3xl font-semibold">{formatIDRShort(Math.round(results.capex))}</div>
@@ -75,7 +90,7 @@ export default function SimulatorPage(){
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="px-6 grid md:grid-cols-3 gap-4">
         <div className="card p-4">
           <div className="text-sm text-muted-300">EBITDA / yr</div>
           <div className="text-3xl font-semibold">{formatIDRShort(Math.round(results.ebitda))}</div>
@@ -97,7 +112,7 @@ export default function SimulatorPage(){
         <div className="text-xs text-yellow-300">Risk: Payback over 5 years — consider increasing courts or F&amp;B contribution.</div>
       )}
 
-      <div className="flex gap-3 items-center">
+      <div className="px-6 flex gap-3 items-center">
         <a className="button-accent px-4 py-2 rounded-xl" href={`/api/export/pdf?s=${encodeScenarioToParam(active)}`}>📄 Export PDF</a>
         <a className="button-xls px-4 py-2 rounded-xl" href={`/api/export/xls?s=${encodeScenarioToParam(active)}`}>📊 Export XLS</a>
         <button className="button-share px-4 py-2 rounded-xl" onClick={()=>{
@@ -107,10 +122,12 @@ export default function SimulatorPage(){
         }}>🔗 Share Link</button>
       </div>
 
-      <ComparePicker />
-      <ScenarioCompare scenarios={(useScenarioStore.getState().selectedCompareIds.length>0
-        ? useScenarioStore.getState().selectedCompareIds.map(id=> scenarios.find(s=> s.id===id)).filter(Boolean) as Scenario[]
-        : scenarios.slice(0,3)).map(s=> ({ name: s.name, s }))} />
+      <div className="px-6 space-y-4">
+        <ComparePicker />
+        <ScenarioCompare scenarios={(useScenarioStore.getState().selectedCompareIds.length>0
+          ? useScenarioStore.getState().selectedCompareIds.map(id=> scenarios.find(s=> s.id===id)).filter(Boolean) as Scenario[]
+          : scenarios.slice(0,3)).map(s=> ({ name: s.name, s }))} />
+      </div>
     </div>
   );
 }
