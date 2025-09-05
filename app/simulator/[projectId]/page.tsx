@@ -51,9 +51,8 @@ export default function SimulatorPage(){
           <div className="text-base text-muted-300">Feasibility &amp; ROI modeling for padel clubs</div>
           <div className="text-sm text-muted-300">v0.9 by Kolabs.Design × HDA × AIM</div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-end">
           <img src="/Asset-4@4x-1024x407.png" alt="Kolabs.Design" style={{ height: 40, width: 'auto' }} onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}} />
-          <span className="text-muted-300">Kolabs.Design</span>
         </div>
       </header>
 
