@@ -6,8 +6,10 @@
   --padel-green: #DFFF00; /* accent */
   --ink-900: #0A0A0A;     /* app bg */
   --ink-700: #151821;     /* card bg */
+  --ink-650: #1E2129;     /* input bg */
+  --border-700: #2C2F38;  /* input border */
   --text-100: #EDEEF0;    /* primary text */
-  --muted-300: #9AA3AE;   /* muted text */
+  --muted-300: #B0B8C2;   /* lighter muted text for readability */
   --radius: 16px;
 }
 
@@ -16,3 +18,30 @@ html, body { background: var(--ink-900); color: var(--text-100); }
 .button-accent { background: var(--padel-green); color: #0B0B0B; border-radius: var(--radius); }
 .card { background: var(--ink-700); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.06); }
 
+/* Button variants and hovers */
+.button-accent { transition: box-shadow 0.15s ease, transform 0.05s ease; }
+.button-accent:hover { box-shadow: 0 0 0 2px rgba(223,255,0,0.7); }
+.button-accent:active { transform: translateY(1px); }
+.button-xls { background: #3B82F6; color: white; border-radius: var(--radius); transition: opacity .15s ease; }
+.button-xls:hover { opacity: .9; }
+.button-share { background: var(--ink-650); color: var(--text-100); border-radius: var(--radius); border: 1px solid var(--border-700); transition: opacity .15s ease; }
+.button-share:hover { opacity: .9; }
+
+/* Inputs */
+.input, .select {
+  background: var(--ink-650);
+  border: 1px solid var(--border-700);
+  border-radius: 12px;
+  color: var(--text-100);
+  padding: 0.5rem 0.75rem;
+}
+
+/* Range slider styling */
+input[type="range"] { -webkit-appearance: none; width: 100%; background: transparent; }
+input[type="range"]::-webkit-slider-runnable-track { height: 6px; background: var(--border-700); border-radius: 9999px; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--padel-green); margin-top: -4px; }
+input[type="range"]::-moz-range-track { height: 6px; background: var(--border-700); border-radius: 9999px; }
+input[type="range"]::-moz-range-thumb { height: 14px; width: 14px; border-radius: 50%; background: var(--padel-green); border: none; }
+
+/* Tables */
+table.striped tbody tr:nth-child(odd) { background: rgba(255,255,255,0.04); }

@@ -21,10 +21,13 @@ export function RatioSliders({ ratios, onChange }:{ ratios:{ courtsPct:number; p
   return (
     <div className="space-y-2">
       {(["courtsPct","parkingPct","fnbPct","circulationPct"] as const).map(key=> (
-        <div key={key} className="grid grid-cols-[140px_1fr_64px] gap-3 items-center">
-          <div className="text-sm text-muted-300">{key}</div>
+        <div key={key} className="grid grid-cols-[160px_1fr_72px] gap-3 items-center">
+          <div className="text-base text-muted-300">{key}</div>
           <input type="range" min={0} max={100} value={(ratios as any)[key]} onChange={e=> onChange({ ...ratios, [key]: Number(e.currentTarget.value) })} />
-          <div className="text-right">{(ratios as any)[key]}%</div>
+          <input type="number" className="input text-right" value={(ratios as any)[key]} onChange={(e)=>{
+            const v = Math.max(0, Math.min(100, Number(e.currentTarget.value||0)));
+            onChange({ ...ratios, [key]: v });
+          }} />
         </div>
       ))}
     </div>

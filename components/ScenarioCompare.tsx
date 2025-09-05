@@ -21,7 +21,7 @@ export function ScenarioCompare({ scenarios }:{ scenarios: { name:string; s: Sce
     <section className="card p-4">
       <h2 className="mb-3">Scenario Compare</h2>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm striped">
           <thead className="text-muted-300">
             <tr>
               <th className="text-left py-2">Metric</th>

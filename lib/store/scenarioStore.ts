@@ -28,7 +28,8 @@ export const useScenarioStore = create<State>()(
         set(() => {
           const s = createBaseScenario();
           s.id = crypto.randomUUID();
-          s.name = "New Scenario";
+          const nextIndex = (get().scenarios.length || 0) + 1;
+          s.name = `Scenario ${nextIndex}`;
           const arr = [s, ...get().scenarios];
           return { scenarios: arr, activeId: s.id };
         }),
@@ -36,7 +37,9 @@ export const useScenarioStore = create<State>()(
         set(() => {
           const src = get().scenarios.find((x) => x.id === id);
           if (!src) return {} as any;
-          const s = duplicateScenario(src, { name: src.name + " (copy)" });
+          const s = duplicateScenario(src, {});
+          const nextIndex = (get().scenarios.length || 0) + 1;
+          s.name = `${src.name} (copy ${nextIndex})`;
           return { scenarios: [s, ...get().scenarios], activeId: s.id };
         }),
       remove: (id) =>

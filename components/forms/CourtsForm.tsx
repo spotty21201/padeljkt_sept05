@@ -6,17 +6,17 @@ export function CourtsForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(
   const c = scenario.courts;
   const risk = c.occupancyPct < 50;
   return (
-    <div className="card p-4 space-y-3">
-      <h3 className="text-lg">Courts</h3>
+    <div className="card p-5 space-y-4">
+      <h3 className="text-xl">Courts</h3>
       <div className="grid md:grid-cols-2 gap-3">
-        <label className="block text-sm">
+        <label className="block text-base">
           <span className="text-muted-300"># Courts</span>
-          <input type="number" className="w-full p-2 mt-1 bg-ink-700 rounded-xl" value={c.courts}
+          <input type="number" className="w-full mt-1 input" value={c.courts}
             onChange={e=> onPatch({ courts: { ...c, courts: Number(e.currentTarget.value || 0) } })} />
         </label>
-        <label className="block text-sm">
+        <label className="block text-base">
           <span className="text-muted-300">Type</span>
-          <select className="w-full p-2 mt-1 bg-ink-700 rounded-xl" value={c.indoorType}
+          <select className="w-full mt-1 select" value={c.indoorType}
             onChange={e=> onPatch({ courts: { ...c, indoorType: e.currentTarget.value as any } })}>
             <option value="outdoor">Outdoor</option>
             <option value="semi">Semi</option>
@@ -25,16 +25,17 @@ export function CourtsForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(
         </label>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-3">
-        <label className="block text-sm">
+      <div className="grid md:grid-cols-3 gap-3 items-end">
+        <label className="block text-base">
           <span className="text-muted-300">Occupancy (%)</span>
           <input type="range" min={0} max={100} className="w-full mt-1" value={c.occupancyPct}
             onChange={e=> onPatch({ courts: { ...c, occupancyPct: Number(e.currentTarget.value) } })} />
-          <div className="text-right">{c.occupancyPct}%</div>
+          <input type="number" className="input text-right" value={c.occupancyPct}
+            onChange={(e)=> onPatch({ courts: { ...c, occupancyPct: Math.max(0, Math.min(100, Number(e.currentTarget.value||0))) } })} />
         </label>
-        <label className="block text-sm">
+        <label className="block text-base">
           <span className="text-muted-300">Hours / Day</span>
-          <input type="number" min={1} max={24} className="w-full p-2 mt-1 bg-ink-700 rounded-xl" value={c.hoursPerDay}
+          <input type="number" min={1} max={24} className="w-full mt-1 input" value={c.hoursPerDay}
             onChange={e=> onPatch({ courts: { ...c, hoursPerDay: Number(e.currentTarget.value || 0) } })} />
         </label>
         <MoneyInput label="Rate / Hour" value={c.ratePerHour} onChange={(v)=> onPatch({ courts: { ...c, ratePerHour: v } })} />
