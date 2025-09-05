@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --padel-green: #DFFF00; /* accent */
+  --ink-900: #0A0A0A;     /* app bg */
+  --ink-700: #151821;     /* card bg */
+  --text-100: #EDEEF0;    /* primary text */
+  --muted-300: #9AA3AE;   /* muted text */
+  --radius: 16px;
+}
+
+html, body { background: var(--ink-900); color: var(--text-100); }
+
+.button-accent { background: var(--padel-green); color: #0B0B0B; border-radius: var(--radius); }
+.card { background: var(--ink-700); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.06); }
+
