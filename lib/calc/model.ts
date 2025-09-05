@@ -1,5 +1,12 @@
 import { Scenario, Results } from "@/lib/types";
 
+// Approx. padel court area incl. runoffs/circulation (sqm)
+export const COURT_SQM = 250;
+export function calcMaxCourts(siteArea:number, ratios:{ courtsPct:number }, perCourtSqm:number = COURT_SQM){
+  const usable = siteArea * (ratios.courtsPct/100);
+  return Math.max(0, Math.floor(usable / Math.max(1, perCourtSqm)));
+}
+
 export function gfaFnb(siteArea: number, ratios: { fnbPct:number; stories:number; efficiency:number }){
   const footprint = siteArea * (ratios.fnbPct/100);
   return footprint * ratios.stories * ratios.efficiency;
@@ -84,6 +91,8 @@ export function calcOpexTotal(sc: Scenario, revenue:number, gfa:number){
 
 export function calcResults(sc: Scenario): Results {
   const gfa = gfaFnb(sc.siteArea, sc.ratios);
+  const maxCourts = calcMaxCourts(sc.siteArea, sc.ratios);
+  const scAdj: Scenario = { ...sc, courts: { ...sc.courts, courts: Math.min(sc.courts.courts, maxCourts) } };
 
   const courtRev = calcCourtRevenue(sc.courts);
   const membershipRev = calcMembershipRevenue(sc.rev.membership.members, sc.rev.membership.feeAnnual);
@@ -94,19 +103,20 @@ export function calcResults(sc: Scenario): Results {
 
   const revenue = sum(courtRev, membershipRev, eventsRev, fnbRev);
 
-  const capexParts = calcCapexTotal(sc.siteArea, sc);
-  const opexPreview = calcOpexTotal(sc, revenue, gfa);
+  const capexParts = calcCapexTotal(scAdj.siteArea, scAdj);
+  const opexPreview = calcOpexTotal(scAdj, revenue, gfa);
   const workingCapital = (sc.capex.workingCapitalMonths/12) * opexPreview.total;
   const capex = capexParts.subtotal + workingCapital;
 
-  const opex = calcOpexTotal(sc, revenue, gfa).total;
+  const opex = calcOpexTotal(scAdj, revenue, gfa).total;
 
   const ebitda = revenue - opex;
   const roi = capex > 0 ? (ebitda / capex) : 0;
   const paybackYears = ebitda > 0 ? (capex / ebitda) : Infinity;
 
-  const roiVsCourts = Array.from({ length: 8 }, (_,i)=> i+1).map(n=>{
-    const tmp = { ...sc, courts: { ...sc.courts, courts: n } } as Scenario;
+  const seriesLen = Math.max(1, Math.min(8, maxCourts || 1));
+  const roiVsCourts = Array.from({ length: seriesLen }, (_,i)=> i+1).map(n=>{
+    const tmp = { ...scAdj, courts: { ...scAdj.courts, courts: n } } as Scenario;
     const r = calcResultsShallow(tmp);
     return { courts: n, roi: r.roi };
   });
@@ -117,15 +127,17 @@ export function calcResults(sc: Scenario): Results {
 
 export function calcResultsShallow(sc: Scenario){
   const gfa = gfaFnb(sc.siteArea, sc.ratios);
-  const courtRev = calcCourtRevenue(sc.courts);
-  const membershipRev = calcMembershipRevenue(sc.rev.membership.members, sc.rev.membership.feeAnnual);
-  const eventsRev = calcEventsRevenue(sc.rev.events.perMonth, sc.rev.events.fee);
-  const fnbRev = sc.rev.fnb.method === "perSqm"
-    ? calcFnbRevenueBySqm(gfa, (sc.rev.fnb as any).perSqmPerMonth)
-    : calcFnbRevenueByVisitorPct(2, sc.courts, (sc.rev.fnb as any).visitorSpendPct, 100000);
+  const maxCourts = calcMaxCourts(sc.siteArea, sc.ratios);
+  const scAdj: Scenario = { ...sc, courts: { ...sc.courts, courts: Math.min(sc.courts.courts, maxCourts) } };
+  const courtRev = calcCourtRevenue(scAdj.courts);
+  const membershipRev = calcMembershipRevenue(scAdj.rev.membership.members, scAdj.rev.membership.feeAnnual);
+  const eventsRev = calcEventsRevenue(scAdj.rev.events.perMonth, scAdj.rev.events.fee);
+  const fnbRev = scAdj.rev.fnb.method === "perSqm"
+    ? calcFnbRevenueBySqm(gfa, (scAdj.rev.fnb as any).perSqmPerMonth)
+    : calcFnbRevenueByVisitorPct(2, scAdj.courts, (scAdj.rev.fnb as any).visitorSpendPct, 100000);
   const revenue = sum(courtRev, membershipRev, eventsRev, fnbRev);
-  const capex = calcCapexTotal(sc.siteArea, sc).subtotal;
-  const opex = calcOpexTotal(sc, revenue, gfa).total;
+  const capex = calcCapexTotal(scAdj.siteArea, scAdj).subtotal;
+  const opex = calcOpexTotal(scAdj, revenue, gfa).total;
   const ebitda = revenue - opex;
   const roi = capex > 0 ? (ebitda / capex) : 0;
   const paybackYears = ebitda > 0 ? (capex / ebitda) : Infinity;
@@ -141,4 +153,3 @@ export function buildBepTimeline(capex:number, ebitda:number, years:number){
   }
   return arr;
 }
-

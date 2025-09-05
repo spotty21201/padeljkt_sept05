@@ -6,6 +6,7 @@ import { HelpTooltip } from "@/components/HelpTooltip";
 export function CourtsForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const c = scenario.courts;
   const risk = c.occupancyPct < 50;
+  const maxCourts = Math.max(0, Math.floor((scenario.siteArea * (scenario.ratios.courtsPct/100)) / 250));
   return (
     <div className="card p-5 space-y-4">
       <h3 className="text-xl">Courts</h3>
@@ -13,7 +14,13 @@ export function CourtsForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(
         <label className="block text-base">
           <span className="text-muted-300"># Courts</span>
           <input type="number" className="w-full mt-1 input" value={c.courts}
-            onChange={e=> onPatch({ courts: { ...c, courts: Number(e.currentTarget.value || 0) } })} />
+            min={0}
+            max={maxCourts}
+            onChange={e=> {
+              const v = Number(e.currentTarget.value || 0);
+              onPatch({ courts: { ...c, courts: Math.min(Math.max(0,v), maxCourts) } });
+            }} />
+          <div className="text-xs text-muted-300 mt-1">Max based on site & ratios: {maxCourts} courts (≈250 sqm/court)</div>
         </label>
         <label className="block text-base">
           <span className="text-muted-300">Type</span>
@@ -44,6 +51,9 @@ export function CourtsForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(
 
       {risk && (
         <div className="text-xs text-yellow-300">Risk: Occupancy below typical viability range (&lt; 50%).</div>
+      )}
+      {c.courts > maxCourts && (
+        <div className="text-xs text-yellow-300">Not feasible: reduce # courts or increase Courts % in Site & Ratios.</div>
       )}
     </div>
   );
