@@ -9,8 +9,8 @@ export function ScenarioManager(){
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-xl">Scenarios</h3>
         <div className="flex gap-2">
-          <button className="button-accent px-3 py-1 rounded-xl" onClick={()=> addNew()}>New</button>
-          {activeId && <button className="button-share px-3 py-1" onClick={()=> duplicate(activeId)}>Duplicate</button>}
+          <button className="button-accent btn-sm" onClick={()=> addNew()}>New</button>
+          {activeId && <button className="button-share btn-sm" onClick={()=> duplicate(activeId)}>Duplicate</button>}
         </div>
       </div>
       <div className="space-y-2">
@@ -18,9 +18,9 @@ export function ScenarioManager(){
           <div key={s.id} className={`flex items-center gap-2 p-2 rounded-xl ${s.id===activeId? 'bg-white/5':''}`}>
             <input className="flex-1 input bg-transparent" value={s.name}
               onChange={(e)=> rename(s.id, e.currentTarget.value)} />
-            <button className="button-accent px-3 py-1" onClick={()=> setActive(s.id)}>Set Active</button>
-            <button className="button-share px-3 py-1" onClick={()=> duplicate(s.id)}>Duplicate</button>
-            <button className="button-share px-3 py-1" onClick={()=> remove(s.id)}>Delete</button>
+            <button className="button-accent btn-sm" onClick={()=> setActive(s.id)}>Set Active</button>
+            <button className="button-share btn-sm" onClick={()=> duplicate(s.id)}>Duplicate</button>
+            <button className="button-share btn-sm" onClick={()=> remove(s.id)}>Delete</button>
           </div>
         ))}
         {scenarios.length === 0 && (

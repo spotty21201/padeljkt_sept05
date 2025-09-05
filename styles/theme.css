@@ -33,6 +33,9 @@ html, body { background: var(--ink-900); color: var(--text-100); }
 .button-share { background: var(--ink-650); color: var(--text-100); border-radius: var(--radius); border: 1px solid var(--border-700); transition: opacity .15s ease; }
 .button-share:hover { opacity: .9; }
 
+/* Small button modifier */
+.btn-sm { font-size: 80%; padding: 0.35rem 0.6rem; border-radius: 10px; }
+
 /* Inputs */
 .input, .select {
   background: var(--ink-650);
