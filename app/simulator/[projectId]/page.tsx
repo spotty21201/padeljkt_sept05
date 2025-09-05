@@ -1,47 +1,61 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import { createBaseScenario } from "@/lib/calc/presets";
+import { useEffect, useMemo } from "react";
 import { calcResults } from "@/lib/calc/model";
-import type { Scenario } from "@/lib/types";
 import { formatIDRShort } from "@/lib/format/currency";
+import { ScenarioCompare } from "@/components/ScenarioCompare";
+import { SiteForm } from "@/components/forms/SiteForm";
+import { CourtsForm } from "@/components/forms/CourtsForm";
+import { RevenueForm } from "@/components/forms/RevenueForm";
+import { CapexForm } from "@/components/forms/CapexForm";
+import { OpexForm } from "@/components/forms/OpexForm";
+import { ScenarioManager } from "@/components/ScenarioManager";
+import { useScenarioStore } from "@/lib/store/scenarioStore";
+import { encodeScenarioToParam, decodeScenarioParam } from "@/lib/util/share";
+import type { Scenario } from "@/lib/types";
 
 export default function SimulatorPage(){
-  const [scenario, setScenario] = useState<Scenario | null>(null);
+  const { scenarios, activeId, update, addNew } = useScenarioStore();
+  const active = useMemo(()=> scenarios.find(s=> s.id === activeId) || scenarios[0], [scenarios, activeId]);
+
+  // Import scenario via URL param ?s=<b64url>; seed one if none
   useEffect(()=>{
-    const saved = typeof window !== 'undefined' ? window.localStorage.getItem("padeljkt:scenario:current") : null;
-    if(saved){
-      try { setScenario(JSON.parse(saved)); } catch { setScenario(createBaseScenario()); }
-    } else {
-      setScenario(createBaseScenario());
+    if(typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    const sParam = url.searchParams.get('s');
+    if(sParam){
+      try{
+        const obj = decodeScenarioParam(sParam) as Scenario;
+        if(obj && obj.id){
+          useScenarioStore.setState((prev)=> ({ scenarios: [obj, ...prev.scenarios], activeId: obj.id }));
+          url.searchParams.delete('s');
+          window.history.replaceState({}, '', url.toString());
+        }
+      }catch{}
     }
+    if(scenarios.length===0){ addNew(); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
-  useEffect(()=>{
-    if(scenario){
-      window.localStorage.setItem("padeljkt:scenario:current", JSON.stringify(scenario));
-    }
-  },[scenario]);
-
-  const results = useMemo(()=> scenario ? calcResults(scenario) : null, [scenario]);
-
-  if(!scenario || !results) return <div className="p-8">Loading…</div>;
+  const results = useMemo(()=> active ? calcResults(active) : null, [active]);
+  if(!active || !results) return <div className="p-8">Loading…</div>;
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-semibold">PadelJKT — {scenario.name}</h1>
+      <h1 className="text-2xl font-semibold">PadelJKT — {active.name}</h1>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="card p-4">
-          <h2 className="mb-2">Site &amp; Ratios</h2>
-          <div className="text-sm text-muted-300">Site Area: {scenario.siteArea.toLocaleString()} sqm</div>
-          <div className="text-sm">Courts %: {scenario.ratios.courtsPct}% | Parking %: {scenario.ratios.parkingPct}% | F&amp;B %: {scenario.ratios.fnbPct}%</div>
-        </div>
-        <div className="card p-4">
-          <h2 className="mb-2">Courts</h2>
-          <div className="text-sm"># Courts: {scenario.courts.courts}</div>
-          <div className="text-sm">Occupancy: {scenario.courts.occupancyPct}% | Rate: {formatIDRShort(scenario.courts.ratePerHour)}</div>
-        </div>
+      <ScenarioManager />
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <SiteForm scenario={active} onPatch={(p)=> update(active.id, p)} />
+        <CourtsForm scenario={active} onPatch={(p)=> update(active.id, p)} />
       </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <RevenueForm scenario={active} onPatch={(p)=> update(active.id, p)} />
+        <CapexForm scenario={active} onPatch={(p)=> update(active.id, p)} />
+      </div>
+
+      <OpexForm scenario={active} onPatch={(p)=> update(active.id, p)} />
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card p-4">
@@ -73,11 +87,24 @@ export default function SimulatorPage(){
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <a className="button-accent px-4 py-2 rounded-xl" href={`/api/export/pdf?pid=${scenario.id}`}>Export PDF</a>
-        <a className="button-accent px-4 py-2 rounded-xl" href={`/api/export/xls?pid=${scenario.id}`}>Export XLS</a>
+      {active.courts.occupancyPct < 50 && (
+        <div className="text-xs text-yellow-300">Risk: Occupancy below 50%.</div>
+      )}
+      {Number.isFinite(results.paybackYears) && results.paybackYears > 5 && (
+        <div className="text-xs text-yellow-300">Risk: Payback over 5 years — consider increasing courts or F&amp;B contribution.</div>
+      )}
+
+      <div className="flex gap-3 items-center">
+        <a className="button-accent px-4 py-2 rounded-xl" href={`/api/export/pdf?s=${encodeScenarioToParam(active)}`}>Export PDF</a>
+        <a className="button-accent px-4 py-2 rounded-xl" href={`/api/export/xls?s=${encodeScenarioToParam(active)}`}>Export XLS</a>
+        <button className="button-accent px-4 py-2 rounded-xl" onClick={()=>{
+          const link = `${window.location.origin}/simulator/sample?s=${encodeScenarioToParam(active)}`;
+          navigator.clipboard?.writeText(link);
+          alert("Share link copied to clipboard");
+        }}>Share Link</button>
       </div>
+
+      <ScenarioCompare scenarios={scenarios.slice(0,3).map(s=> ({ name: s.name, s }))} />
     </div>
   );
 }
-

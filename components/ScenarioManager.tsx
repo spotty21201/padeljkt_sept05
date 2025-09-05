@@ -1,0 +1,32 @@
+"use client";
+import { useScenarioStore } from "@/lib/store/scenarioStore";
+
+export function ScenarioManager(){
+  const { scenarios, activeId, setActive, addNew, duplicate, remove, rename } = useScenarioStore();
+
+  return (
+    <section className="card p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg">Scenarios</h3>
+        <div className="flex gap-2">
+          <button className="button-accent px-3 py-1 rounded-xl" onClick={()=> addNew()}>New</button>
+          {activeId && <button className="button-accent px-3 py-1 rounded-xl" onClick={()=> duplicate(activeId)}>Duplicate</button>}
+        </div>
+      </div>
+      <div className="space-y-2">
+        {scenarios.map(s => (
+          <div key={s.id} className={`flex items-center gap-2 p-2 rounded-xl ${s.id===activeId? 'bg-white/5':''}`}>
+            <input className="flex-1 bg-transparent border border-white/10 rounded px-2 py-1" value={s.name}
+              onChange={(e)=> rename(s.id, e.currentTarget.value)} />
+            <button className="text-sm underline" onClick={()=> setActive(s.id)}>Set Active</button>
+            <button className="text-sm underline" onClick={()=> duplicate(s.id)}>Copy</button>
+            <button className="text-sm underline text-red-300" onClick={()=> remove(s.id)}>Delete</button>
+          </div>
+        ))}
+        {scenarios.length === 0 && (
+          <div className="text-sm text-muted-300">No scenarios yet. Click New to create one.</div>
+        )}
+      </div>
+    </section>
+  );
+}
