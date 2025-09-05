@@ -67,7 +67,7 @@ export function Report({ scenario, results, exportedAtISO, options }: { scenario
             <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>ROI vs Courts</div>
             <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
               <div style={{ height: 300, padding: 12 }}>
-                <RoiVsCourtsChart data={results.charts.roiVsCourts} current={scenario.courts.courts} variant="light" tickSize={11} monochrome={true} />
+                <RoiVsCourtsChart data={results.charts.roiVsCourts} current={scenario.courts.courts} variant="light" tickSize={11} monochrome={true} plain containerStyle={{ background:'#ffffff', borderRadius:12, height:'100%' }} />
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@ export function Report({ scenario, results, exportedAtISO, options }: { scenario
             <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>Payback Timeline</div>
             <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
               <div style={{ height: 300, padding: 12 }}>
-                <PaybackTimelineChart data={results.charts.bepTimeline} bepYear={results.charts.bepYear} variant="light" tickSize={11} monochrome={true} />
+                <PaybackTimelineChart data={results.charts.bepTimeline} bepYear={results.charts.bepYear} variant="light" tickSize={11} monochrome={true} plain containerStyle={{ background:'#ffffff', borderRadius:12, height:'100%' }} />
               </div>
             </div>
           </div>

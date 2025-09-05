@@ -2,14 +2,14 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Area } from "recharts";
 import { formatIDR, formatYear } from "@/lib/format/format";
 
-export function PaybackTimelineChart({ data, bepYear, variant="dark", tickSize=12, monochrome=false }:{ data:{ year:number; cumulative:number }[]; bepYear?: number | null; variant?: "dark"|"light"; tickSize?: number; monochrome?: boolean }){
+export function PaybackTimelineChart({ data, bepYear, variant="dark", tickSize=12, monochrome=false, plain=false, containerStyle }:{ data:{ year:number; cumulative:number }[]; bepYear?: number | null; variant?: "dark"|"light"; tickSize?: number; monochrome?: boolean; plain?: boolean; containerStyle?: React.CSSProperties }){
   const formatted = data.map(d=> ({ year: d.year, cumulative: Math.round(d.cumulative) }));
   const axisColor = variant==='dark' ? "rgba(255,255,255,0.72)" : "#6B7280";
   const gridColor = variant==='dark' ? "rgba(255,255,255,0.08)" : "#E5E7EB";
   const title = "Payback Timeline";
   const xMax = bepYear && bepYear < 6 ? 6 : 10;
   return (
-    <div className="card p-4 h-72" aria-label={title}>
+    <div className={plain? "h-72" : "card p-4 h-72"} aria-label={title} style={plain? containerStyle: undefined}>
       <h3 className="sr-only">{title}</h3>
       <div className="text-base mb-2 text-text-base" style={{ color: axisColor }}>{title}</div>
       <ResponsiveContainer width="100%" height="100%">

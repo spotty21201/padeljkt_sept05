@@ -2,9 +2,9 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceDot, ReferenceLine, Area, Label } from "recharts";
 import { formatPct } from "@/lib/format/format";
 
-type Props = { data:{ courts:number; roi:number }[]; current:number; variant?: "dark"|"light"; tickSize?: number; monochrome?: boolean };
+type Props = { data:{ courts:number; roi:number }[]; current:number; variant?: "dark"|"light"; tickSize?: number; monochrome?: boolean; plain?: boolean; containerStyle?: React.CSSProperties };
 
-export function RoiVsCourtsChart({ data, current, variant="dark", tickSize=12, monochrome=false }: Props){
+export function RoiVsCourtsChart({ data, current, variant="dark", tickSize=12, monochrome=false, plain=false, containerStyle }: Props){
   const formatted = data.map(d=> ({ courts: d.courts, roiPct: +(d.roi*100).toFixed(1) }));
   const currentPoint = formatted.find(d=> d.courts === current);
   const maxCourts = Math.max(...formatted.map(d=> d.courts), 1);
@@ -19,7 +19,7 @@ export function RoiVsCourtsChart({ data, current, variant="dark", tickSize=12, m
   const peak = formatted.reduce((acc, x)=> x.roiPct > acc.roiPct ? x : acc, formatted[0] || { courts: 0, roiPct: 0 });
 
   return (
-    <div className="card p-4 h-72" aria-label={title}>
+    <div className={plain? "h-72" : "card p-4 h-72"} aria-label={title} style={plain? containerStyle: undefined}>
       <h3 className="sr-only">{title}</h3>
       <div className="text-base mb-2 text-text-base" style={{ color: axisColor }}>{title}</div>
       <ResponsiveContainer width="100%" height="100%">
