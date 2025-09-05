@@ -1,6 +1,7 @@
 "use client";
 import type { Scenario } from "@/lib/types";
 import { MoneyInput } from "@/components/inputs/MoneyInput";
+import { HelpTooltip } from "@/components/HelpTooltip";
 
 export function CourtsForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const c = scenario.courts;
@@ -27,7 +28,7 @@ export function CourtsForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(
 
       <div className="grid md:grid-cols-3 gap-3 items-end">
         <label className="block text-base">
-          <span className="text-muted-300">Occupancy (%)</span>
+          <span className="text-muted-300 inline-flex items-center">Occupancy (%) <HelpTooltip text="Percent of hours booked during operating day. Below 50% is typically risky." /></span>
           <input type="range" min={0} max={100} className="w-full mt-1" value={c.occupancyPct}
             onChange={e=> onPatch({ courts: { ...c, occupancyPct: Number(e.currentTarget.value) } })} />
           <input type="number" className="input text-right" value={c.occupancyPct}

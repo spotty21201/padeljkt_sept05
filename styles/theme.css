@@ -41,6 +41,7 @@ html, body { background: var(--ink-900); color: var(--text-100); }
   color: var(--text-100);
   padding: 0.5rem 0.75rem;
 }
+.input:focus, .select:focus { outline: none; box-shadow: 0 0 0 2px rgba(223,255,0,0.35); border-color: rgba(223,255,0,0.55); }
 
 /* Range slider styling */
 input[type="range"] { -webkit-appearance: none; width: 100%; background: transparent; }

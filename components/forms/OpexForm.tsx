@@ -1,6 +1,7 @@
 "use client";
 import type { Scenario } from "@/lib/types";
 import { MoneyInput } from "@/components/inputs/MoneyInput";
+import { HelpTooltip } from "@/components/HelpTooltip";
 
 export function OpexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const ox = scenario.opex;
@@ -37,7 +38,7 @@ export function OpexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:
         <MoneyInput label="Utilities Rp/sqm/mo" value={ox.utilitiesRpPerSqmPerMonth} onChange={(v)=> set({ utilitiesRpPerSqmPerMonth: v })} />
         <MoneyInput label="Maintenance Rp/court/mo" value={ox.maintenanceRpPerCourtPerMonth} onChange={(v)=> set({ maintenanceRpPerCourtPerMonth: v })} />
         <label className="block text-base">
-          <span className="text-muted-300">Marketing Method</span>
+          <span className="text-muted-300 inline-flex items-center">Marketing Method <HelpTooltip text="Use a flat annual budget or tie spend as % of revenue (e.g., 2%)." /></span>
           <select className="w-full mt-1 select" value={(ox.marketing as any).method}
             onChange={e=>{
               const method = e.currentTarget.value as "flat"|"pctRevenue";
@@ -63,7 +64,7 @@ export function OpexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:
       <div className="grid md:grid-cols-2 gap-3">
         <MoneyInput label="Lease Annual" value={ox.leaseAnnual || 0} onChange={(v)=> set({ leaseAnnual: v })} />
         <label className="block text-base">
-          <span className="text-muted-300">Tax % of Revenue</span>
+          <span className="text-muted-300 inline-flex items-center">Tax % of Revenue <HelpTooltip text="Estimate taxes as a percent of gross revenue." /></span>
           <input type="number" min={0} max={100} className="w-full mt-1 input" value={ox.taxPct || 0}
             onChange={e=> set({ taxPct: Number(e.currentTarget.value || 0) })} />
         </label>

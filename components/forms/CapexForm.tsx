@@ -1,6 +1,7 @@
 "use client";
 import type { Scenario } from "@/lib/types";
 import { MoneyInput } from "@/components/inputs/MoneyInput";
+import { HelpTooltip } from "@/components/HelpTooltip";
 
 export function CapexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const cx = scenario.capex;
@@ -9,7 +10,7 @@ export function CapexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p
     <div className="card p-5 space-y-4">
       <h3 className="text-xl">CAPEX</h3>
       <label className="block text-base">
-        <span className="text-muted-300">Land Lease Method</span>
+        <span className="text-muted-300 inline-flex items-center">Land Lease Method <HelpTooltip text="Choose a flat upfront lease or a per-sqm per-year basis with years." /></span>
         <select className="w-full mt-1 select" value={(cx.landLease as any).method}
           onChange={e=> {
             const method = e.currentTarget.value as "perSqm"|"flat";
@@ -37,7 +38,7 @@ export function CapexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p
       <div className="grid md:grid-cols-3 gap-3">
         <MoneyInput label="Court Unit Cost" value={cx.courtUnitCost} onChange={(v)=> set({ courtUnitCost: v })} />
         <label className="block text-base">
-          <span className="text-muted-300">Roof Factor</span>
+          <span className="text-muted-300 inline-flex items-center">Roof Factor <HelpTooltip text="Multiplier for semi/indoor structures vs outdoor (e.g., 1.0 outdoor, 1.15 semi, 1.35 indoor)." /></span>
           <input type="number" step="0.01" className="w-full mt-1 input" value={cx.roofFactor}
             onChange={e=> set({ roofFactor: Number(e.currentTarget.value || 1) })} />
         </label>
@@ -48,7 +49,7 @@ export function CapexForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p
         <MoneyInput label="Fitout — Cafe" value={cx.fitout.cafe} onChange={(v)=> set({ fitout: { ...cx.fitout, cafe: v } })} />
         <MoneyInput label="Fitout — Locker" value={cx.fitout.locker} onChange={(v)=> set({ fitout: { ...cx.fitout, locker: v } })} />
         <label className="block text-base">
-          <span className="text-muted-300">Working Capital (months)</span>
+          <span className="text-muted-300 inline-flex items-center">Working Capital (months) <HelpTooltip text="Months of operating expenses to cover at launch." /></span>
           <input type="number" className="w-full mt-1 input" value={cx.workingCapitalMonths}
             onChange={e=> set({ workingCapitalMonths: Number(e.currentTarget.value || 0) })} />
         </label>

@@ -1,6 +1,7 @@
 "use client";
 import type { Scenario } from "@/lib/types";
 import { MoneyInput } from "@/components/inputs/MoneyInput";
+import { HelpTooltip } from "@/components/HelpTooltip";
 
 export function RevenueForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:(p:Partial<Scenario>)=>void }){
   const rev = scenario.rev;
@@ -28,7 +29,7 @@ export function RevenueForm({ scenario, onPatch }:{ scenario: Scenario; onPatch:
 
       <div className="grid md:grid-cols-3 gap-3 items-end">
         <label className="block text-base">
-          <span className="text-muted-300">F&B Method</span>
+          <span className="text-muted-300 inline-flex items-center">F&B Method <HelpTooltip text="Choose between revenue per sqm per month or a % of visitor ticket spend." /></span>
           <select className="w-full mt-1 select" value={(rev.fnb as any).method}
             onChange={e=> {
               const method = e.currentTarget.value as "perSqm"|"perVisitorPct";

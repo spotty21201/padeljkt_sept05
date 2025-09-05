@@ -77,30 +77,30 @@ export default function SimulatorPage(){
       <div className="px-6 grid md:grid-cols-3 gap-4">
         <div className="card p-4">
           <div className="text-sm text-muted-300">CAPEX</div>
-          <div className="text-3xl font-semibold">{formatIDRShort(Math.round(results.capex))}</div>
+          <div className="text-3xl font-semibold text-center">{formatIDRShort(Math.round(results.capex))}</div>
         </div>
         <div className="card p-4">
           <div className="text-sm text-muted-300">OPEX / yr</div>
-          <div className="text-3xl font-semibold">{formatIDRShort(Math.round(results.opex))}</div>
+          <div className="text-3xl font-semibold text-center">{formatIDRShort(Math.round(results.opex))}</div>
         </div>
         <div className="card p-4">
           <div className="text-sm text-muted-300">Revenue / yr</div>
-          <div className="text-3xl font-semibold">{formatIDRShort(Math.round(results.revenue))}</div>
+          <div className="text-3xl font-semibold text-center">{formatIDRShort(Math.round(results.revenue))}</div>
         </div>
       </div>
 
       <div className="px-6 grid md:grid-cols-3 gap-4">
         <div className="card p-4">
           <div className="text-sm text-muted-300">EBITDA / yr</div>
-          <div className="text-3xl font-semibold">{formatIDRShort(Math.round(results.ebitda))}</div>
+          <div className="text-3xl font-semibold text-center">{formatIDRShort(Math.round(results.ebitda))}</div>
         </div>
         <div className="card p-4">
           <div className="text-sm text-muted-300">ROI</div>
-          <div className="text-3xl font-semibold">{(results.roi*100).toFixed(1)}%</div>
+          <div className="text-3xl font-semibold text-center">{(results.roi*100).toFixed(1)}%</div>
         </div>
         <div className="card p-4">
           <div className="text-sm text-muted-300">Payback</div>
-          <div className="text-3xl font-semibold">{Number.isFinite(results.paybackYears) ? results.paybackYears.toFixed(1) : "∞"} yrs</div>
+          <div className="text-3xl font-semibold text-center">{Number.isFinite(results.paybackYears) ? results.paybackYears.toFixed(1) : "∞"} yrs</div>
         </div>
       </div>
 
