@@ -5,6 +5,7 @@ export async function buildWorkbook(data: { capex:number; opex:number; revenue:n
   wb.creator = "PadelJKT";
   const wsA = wb.addWorksheet("Assumptions");
   const wsR = wb.addWorksheet("Results");
+  const wsC = wb.addWorksheet("Charts_Data");
 
   // Named cells (example)
   wsR.getCell("A1").value = "Metric";
@@ -34,7 +35,19 @@ export async function buildWorkbook(data: { capex:number; opex:number; revenue:n
   ];
   wsR.views = [{ state: "frozen", ySplit: 1 }];
 
+  // Charts data (placeholders; consumers can create charts manually in Excel)
+  wsC.getCell("A1").value = "ROI_vs_Courts:courts";
+  wsC.getCell("B1").value = "ROI_vs_Courts:roi%";
+  wsC.getCell("D1").value = "Payback:year";
+  wsC.getCell("E1").value = "Payback:cumulative";
+  wsC.columns = [
+    { key: "a", width: 18 },
+    { key: "b", width: 18 },
+    { key: "c", width: 4 },
+    { key: "d", width: 18 },
+    { key: "e", width: 18 },
+  ];
+
   const buf = await wb.xlsx.writeBuffer();
   return Buffer.from(buf);
 }
-

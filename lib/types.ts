@@ -71,6 +71,6 @@ export type Results = {
   charts: {
     roiVsCourts: { courts: number; roi: number }[];
     bepTimeline: { year: number; cumulative: number }[];
+    bepYear?: number | null;
   };
 };
-

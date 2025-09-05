@@ -74,6 +74,41 @@ export async function GET(req: NextRequest) {
   }
   y += Math.ceil(tiles.length/2)*(boxH+gap) + 8;
 
+  // Simple Charts (drawn inline)
+  // ROI vs Courts (left)
+  const chartX = 56, chartY = y + 8, chartW = 220, chartH = 120;
+  doc.setDrawColor(255); doc.rect(chartX, chartY, chartW, chartH);
+  const roiSeries = r.charts.roiVsCourts.map(p=> ({ x: p.courts, y: +(p.roi*100).toFixed(1) }));
+  const xMax = Math.max(...roiSeries.map(p=> p.x), 1);
+  const yMin = Math.min(...roiSeries.map(p=> p.y), 0);
+  const yMax = Math.max(...roiSeries.map(p=> p.y), 1);
+  function mapX(v:number){ return chartX + (v/xMax)*chartW; }
+  function mapY(v:number){ return chartY + chartH - ((v - yMin)/(yMax - yMin || 1))*chartH; }
+  doc.setDrawColor(182,255,59);
+  for(let i=1;i<roiSeries.length;i++){
+    doc.line(mapX(roiSeries[i-1].x), mapY(roiSeries[i-1].y), mapX(roiSeries[i].x), mapY(roiSeries[i].y));
+  }
+  // Payback timeline (right)
+  const chart2X = chartX + chartW + 30, chart2Y = chartY, chart2W = 220, chart2H = 120;
+  doc.setDrawColor(255); doc.rect(chart2X, chart2Y, chart2W, chart2H);
+  const pay = r.charts.bepTimeline;
+  const x2Max = Math.max(...pay.map(p=> p.year), 1);
+  const y2Min = Math.min(...pay.map(p=> p.cumulative), 0);
+  const y2Max = Math.max(...pay.map(p=> p.cumulative), 1);
+  function map2X(v:number){ return chart2X + (v/x2Max)*chart2W; }
+  function map2Y(v:number){ return chart2Y + chart2H - ((v - y2Min)/(y2Max - y2Min || 1))*chart2H; }
+  doc.setDrawColor(182,255,59);
+  for(let i=1;i<pay.length;i++){
+    doc.line(map2X(pay[i-1].year), map2Y(pay[i-1].cumulative), map2X(pay[i].year), map2Y(pay[i].cumulative));
+  }
+  if(r.charts.bepYear){
+    doc.setDrawColor(182,255,59); doc.setLineDash([3]);
+    const bx = map2X(r.charts.bepYear);
+    doc.line(bx, chart2Y, bx, chart2Y+chart2H);
+    doc.setLineDash([]);
+  }
+  y += chartH + 30;
+
   // Disclaimer footer
   const disclaimer = "This simulator provides directional estimates only and does not constitute financial advice. Assumptions should be validated for each site. © Kolabs.Design × HDA × AIM";
   doc.setFontSize(9);

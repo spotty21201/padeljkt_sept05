@@ -114,15 +114,16 @@ export function calcResults(sc: Scenario): Results {
   const roi = capex > 0 ? (ebitda / capex) : 0;
   const paybackYears = ebitda > 0 ? (capex / ebitda) : Infinity;
 
-  const seriesLen = Math.max(1, Math.min(8, maxCourts || 1));
+  const seriesLen = Math.max(1, Math.min(12, maxCourts || 1));
   const roiVsCourts = Array.from({ length: seriesLen }, (_,i)=> i+1).map(n=>{
     const tmp = { ...scAdj, courts: { ...scAdj.courts, courts: n } } as Scenario;
     const r = calcResultsShallow(tmp);
     return { courts: n, roi: r.roi };
   });
-  const bepTimeline = buildBepTimeline(capex, ebitda, 7);
+  const bepTimeline = buildBepTimeline(capex, ebitda, 10);
+  const bepYear = bepTimeline.find(p => p.cumulative >= 0)?.year ?? null;
 
-  return { capex, opex, revenue, ebitda, roi, paybackYears, charts: { roiVsCourts, bepTimeline } };
+  return { capex, opex, revenue, ebitda, roi, paybackYears, charts: { roiVsCourts, bepTimeline, bepYear } };
 }
 
 export function calcResultsShallow(sc: Scenario){

@@ -14,6 +14,9 @@ import { encodeScenarioToParam, decodeScenarioParam } from "@/lib/util/share";
 import type { Scenario } from "@/lib/types";
 import { ComparePicker } from "@/components/ComparePicker";
 import AppHeader from "@/components/ui/AppHeader";
+import { RoiVsCourtsChart } from "@/components/charts/RoiVsCourts";
+import { PaybackTimelineChart } from "@/components/charts/PaybackTimeline";
+import { ScenarioCompareChart } from "@/components/charts/ScenarioCompareChart";
 
 export default function SimulatorPage(){
   const { scenarios, activeId, update, addNew } = useScenarioStore();
@@ -111,6 +114,12 @@ export default function SimulatorPage(){
         <div className="text-xs text-yellow-300">Risk: Payback over 5 years — consider increasing courts or F&amp;B contribution.</div>
       )}
 
+      {/* Charts */}
+      <div className="px-6 grid lg:grid-cols-2 gap-4">
+        <RoiVsCourtsChart data={results.charts.roiVsCourts} current={active.courts.courts} />
+        <PaybackTimelineChart data={results.charts.bepTimeline} bepYear={results.charts.bepYear} />
+      </div>
+
       <div className="px-6 flex gap-3 items-center">
         <a className="button-accent px-4 py-2 rounded-xl" href={`/api/export/pdf?s=${encodeScenarioToParam(active)}`}>Export PDF</a>
         <a className="button-xls px-4 py-2 rounded-xl" href={`/api/export/xls?s=${encodeScenarioToParam(active)}`}>Export XLS</a>
@@ -126,6 +135,7 @@ export default function SimulatorPage(){
         <ScenarioCompare scenarios={(useScenarioStore.getState().selectedCompareIds.length>0
           ? useScenarioStore.getState().selectedCompareIds.map(id=> scenarios.find(s=> s.id===id)).filter(Boolean) as Scenario[]
           : scenarios.slice(0,3)).map(s=> ({ name: s.name, s }))} />
+        <ScenarioCompareChart />
       </div>
     </div>
   );
