@@ -19,10 +19,16 @@ export async function GET(req: NextRequest) {
 
   // Header with logo (optional)
   try{
-    const logoPath = path.join(process.cwd(), "public", "logo.png");
-    if(fs.existsSync(logoPath)){
-      const img = fs.readFileSync(logoPath).toString("base64");
-      doc.addImage(`data:image/png;base64,${img}`, "PNG", 480, 40, 80, 40);
+    const candidates = [
+      path.join(process.cwd(), "public", "Asset-4@4x-1024x407.png"),
+      path.join(process.cwd(), "public", "logo.png")
+    ];
+    for(const p of candidates){
+      if(fs.existsSync(p)){
+        const img = fs.readFileSync(p).toString("base64");
+        doc.addImage(`data:image/png;base64,${img}`, "PNG", 460, 36, 120, 48);
+        break;
+      }
     }
   }catch{}
 
