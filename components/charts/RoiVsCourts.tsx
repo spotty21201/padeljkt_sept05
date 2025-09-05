@@ -1,25 +1,46 @@
 "use client";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceDot } from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceDot, ReferenceLine, Area, Label } from "recharts";
+import { formatPct } from "@/lib/format/format";
 
 export function RoiVsCourtsChart({ data, current }:{ data:{ courts:number; roi:number }[]; current:number }){
   const formatted = data.map(d=> ({ courts: d.courts, roiPct: +(d.roi*100).toFixed(1) }));
   const currentPoint = formatted.find(d=> d.courts === current);
+  const maxCourts = Math.max(...formatted.map(d=> d.courts), 1);
+  const xDomain:[number, number] = maxCourts >= 10 ? [1, 10] : [1, maxCourts + 1];
+  const yMax = Math.max(...formatted.map(d=> d.roiPct), 0);
+  const niceMax = yMax <= 50 ? 50 : (yMax <= 60 ? 60 : Math.ceil(yMax/10)*10);
+  const axisColor = "rgba(255,255,255,0.72)";
+  const gridColor = "rgba(255,255,255,0.08)";
+  const title = "ROI vs Courts";
+
+  // Peak ROI annotation
+  const peak = formatted.reduce((acc, x)=> x.roiPct > acc.roiPct ? x : acc, formatted[0] || { courts: 0, roiPct: 0 });
+
   return (
-    <div className="card p-4 h-64">
-      <div className="text-sm text-muted-300 mb-2">ROI vs Courts</div>
+    <div className="card p-4 h-72" aria-label={title}>
+      <h3 className="sr-only">{title}</h3>
+      <div className="text-base mb-2" style={{ color: axisColor }}>{title}</div>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={formatted}>
-          <CartesianGrid stroke="rgba(255,255,255,0.05)" />
-          <XAxis dataKey="courts" stroke="#9AA3AE" />
-          <YAxis stroke="#9AA3AE" unit="%" />
-          <Tooltip contentStyle={{ background: "#151821", border: "1px solid rgba(255,255,255,0.1)", color: "#EDEEF0" }} formatter={(v)=> [`${v}%`,`ROI`]} />
-          <Line type="monotone" dataKey="roiPct" stroke="#B6FF3B" strokeWidth={2} dot={{ r: 2 }} />
+        <LineChart data={formatted} margin={{ top: 16, right: 16, bottom: 8, left: 16 }}>
+          <CartesianGrid stroke={gridColor} />
+          <XAxis dataKey="courts" stroke={axisColor} domain={xDomain} tick={{ fill: axisColor, fontSize: 12 }} allowDecimals={false} />
+          <YAxis stroke={axisColor} domain={[0, niceMax]} tick={{ fill: axisColor, fontSize: 12 }} tickFormatter={(v)=> formatPct(v/100)} />
+          <Tooltip contentStyle={{ background: "#151821", border: "1px solid rgba(255,255,255,0.1)", color: "#EDEEF0" }} formatter={(v)=> [`${(v as number).toFixed(1)}%`,`ROI`]} labelFormatter={(l)=> `Courts: ${l}`} />
+          <Area type="monotone" dataKey="roiPct" stroke="none" fill="#B6FF3B" fillOpacity={0.08} />
+          <Line type="monotone" dataKey="roiPct" stroke="#B6FF3B" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5, stroke: "#B6FF3B", strokeWidth: 1 }} />
           {currentPoint && (
-            <ReferenceDot x={currentPoint.courts} y={currentPoint.roiPct} r={5} fill="#B6FF3B" stroke="#0A0A0A" />
+            <>
+              <ReferenceDot x={currentPoint.courts} y={currentPoint.roiPct} r={5} fill="#B6FF3B" stroke="#0A0A0A" />
+              <ReferenceLine x={current} stroke={axisColor} strokeDasharray="3 3" label={{ value: "Current", fill: axisColor, fontSize: 11, position: "top" }} />
+            </>
           )}
+          {peak && peak.courts ? (
+            <ReferenceDot x={peak.courts} y={peak.roiPct} r={5} fill="#B6FF3B" stroke="#0A0A0A">
+              <Label value={`Peak ROI: ${peak.roiPct.toFixed(1)}% at ${peak.courts}`} position="top" fill={axisColor} fontSize={11} />
+            </ReferenceDot>
+          ) : null}
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
 }
-
