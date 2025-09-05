@@ -44,10 +44,10 @@ export default function SimulatorPage(){
   return (
     <div className="space-y-6">
       <AppHeader
-        appName="PadelJKT Simulator"
-        tagline="Predictive ROI and feasibility analysis for padel clubs."
+        appName="PadelJKT FS Engine"
+        tagline="Padel meets profit: predictive ROI and feasibility."
         version="v0.9"
-        credits="by Kolabs.Design × HDA × AIM"
+        credits="by HDA × KOLABS.DESIGN × AIM"
         scenarioName={active.name}
         onScenarioClick={() => {
           const el = document.getElementById("scenario-panel");
