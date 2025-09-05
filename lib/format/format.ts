@@ -17,3 +17,6 @@ export function formatYear(n: number): string {
   return `Year ${n}`;
 }
 
+export function formatYears(n: number, digits: 0 | 1 = 1): string {
+  return `${n.toFixed(digits)} yrs`;
+}

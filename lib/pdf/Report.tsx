@@ -3,10 +3,19 @@ import React from "react";
 import type { Scenario, Results } from "@/lib/types";
 import { RoiVsCourtsChart } from "@/components/charts/RoiVsCourts";
 import { PaybackTimelineChart } from "@/components/charts/PaybackTimeline";
-import { ScenarioCompareChart } from "@/components/charts/ScenarioCompareChart";
+import { useScenarioStore } from "@/lib/store/scenarioStore";
+import { calcResults } from "@/lib/calc/model";
+import { ComposedChart, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, Line } from "recharts";
+import { formatYears } from "@/lib/format/format";
 import { formatIDRShort } from "@/lib/format/currency";
 
 export function Report({ scenario, results, exportedAtISO }:{ scenario: Scenario; results: Results; exportedAtISO: string }){
+  const { scenarios, selectedCompareIds } = useScenarioStore.getState();
+  const chosen = (selectedCompareIds?.length>0 ? selectedCompareIds.map(id=> scenarios.find(s=> s.id===id)).filter(Boolean) : scenarios.slice(0,3)) as Scenario[];
+  const compareData = chosen.map((s, idx)=>{
+    const r = calcResults(s);
+    return { name: (s as any).displayName || s.name || `Scenario ${idx+1}`, ROI: +(r.roi*100).toFixed(1), Payback: Number.isFinite(r.paybackYears)? +r.paybackYears.toFixed(1): 0 };
+  });
   return (
     <div id="padeljkt-report-root" style={{
       width: 1240,
@@ -68,6 +77,29 @@ export function Report({ scenario, results, exportedAtISO }:{ scenario: Scenario
         </div>
       </div>
 
+      {/* Outcomes (ROI & Payback) if scenarios available */}
+      {compareData.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>Outcomes (ROI & Payback)</div>
+          <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
+            <div style={{ height: 240, padding: 12 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={compareData} margin={{ top: 16, right: 24, bottom: 24, left: 16 }}>
+                  <CartesianGrid stroke="#E5E7EB" />
+                  <XAxis dataKey="name" stroke="#6B7280" tick={{ fill: '#6B7280', fontSize: 12 }} />
+                  <YAxis yAxisId="left" domain={[0, 100]} stroke="#6B7280" tick={{ fill: '#6B7280', fontSize: 12 }} tickFormatter={(v)=> `${v}%`} />
+                  <YAxis yAxisId="right" orientation="right" domain={[0, 10]} stroke="#6B7280" tick={{ fill: '#6B7280', fontSize: 12 }} tickFormatter={(v)=> formatYears(v as number, 1)} />
+                  <Tooltip contentStyle={{ background: "#ffffff", border: "1px solid #E5E7EB", color: "#1B1F27" }} />
+                  <Legend wrapperStyle={{ fontSize: 12, color: '#6B7280' }} verticalAlign="top" align="right" />
+                  <Bar yAxisId="left" dataKey="ROI" fill="#9FE870" barSize={18} radius={[4,4,0,0]} />
+                  <Line yAxisId="right" type="monotone" dataKey="Payback" stroke="#4FC3F7" strokeWidth={2} dot={{ r: 4 }} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Assumptions */}
       <div style={{ marginTop: 16 }}>
         <div style={{ fontSize: 14, fontWeight:700, marginBottom: 8 }}>Assumptions Snapshot</div>
@@ -106,4 +138,3 @@ export function Report({ scenario, results, exportedAtISO }:{ scenario: Scenario
     </div>
   );
 }
-

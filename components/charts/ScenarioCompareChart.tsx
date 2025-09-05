@@ -3,7 +3,7 @@ import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, ComposedChart, Line } from "recharts";
 import { useScenarioStore } from "@/lib/store/scenarioStore";
 import { calcResults } from "@/lib/calc/model";
-import { formatIDR } from "@/lib/format/format";
+import { formatIDR, formatYears } from "@/lib/format/format";
 
 function axisCompact(v:number){
   const abs = Math.abs(v);
@@ -14,7 +14,7 @@ function axisCompact(v:number){
 
 export function ScenarioCompareChart(){
   const { scenarios, selectedCompareIds } = useScenarioStore();
-  const [showExtra, setShowExtra] = useState(false);
+  const [showExtra, setShowExtra] = useState(true);
   const chosen = (selectedCompareIds.length>0 ? selectedCompareIds.map(id=> scenarios.find(s=> s.id===id)).filter(Boolean) : scenarios.slice(0,3)) as typeof scenarios;
   const data = chosen.map((s, idx)=>{
     const r = calcResults(s);
@@ -56,7 +56,15 @@ export function ScenarioCompareChart(){
     <div className="card p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="text-base text-text-base">Scenario Comparison (Graph)</div>
-        <button className="button-share btn-sm" onClick={()=> setShowExtra(s=> !s)}>{showExtra? 'Hide ROI & Payback' : 'Show ROI & Payback'}</button>
+        <label className="inline-flex items-center gap-2 cursor-pointer">
+          <span className="text-text-mut text-sm">Outcomes (ROI & Payback)</span>
+          <input type="checkbox" className="sr-only" checked={showExtra} onChange={(e)=> setShowExtra(e.currentTarget.checked)} />
+          <span tabIndex={0} role="switch" aria-checked={showExtra} onKeyDown={(e)=>{ if(e.key==='Enter' || e.key===' ') setShowExtra(v=>!v); }}
+            className={`relative inline-flex h-5 w-9 items-center rounded-full transition ${showExtra? 'bg-accent-600/70':'bg-ink-600'} focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-600/70`}
+            onClick={()=> setShowExtra(v=>!v)}>
+            <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition ${showExtra? 'translate-x-4':'translate-x-1'}`} />
+          </span>
+        </label>
       </div>
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
@@ -74,19 +82,44 @@ export function ScenarioCompareChart(){
       </div>
 
       {showExtra && (
-        <div className="h-72 mt-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={data} margin={{ left: 24, right: 16, top: 16, bottom: 24 }}>
-              <CartesianGrid stroke={gridColor} />
-              <XAxis dataKey="name" stroke={axisColor} tick={{ fill: axisColor, fontSize: 12 }} />
-              <YAxis yAxisId="left" stroke={axisColor} tick={{ fill: axisColor, fontSize: 12 }} tickFormatter={(v)=> `${v}%`} />
-              <YAxis yAxisId="right" orientation="right" stroke={axisColor} tick={{ fill: axisColor, fontSize: 12 }} tickFormatter={(v)=> `${v}yr`} />
-              <Tooltip contentStyle={{ background: "#151821", border: "1px solid rgba(255,255,255,0.1)", color: "#EDEEF0" }} />
-              <Legend wrapperStyle={{ fontSize: 12, color: axisColor }} verticalAlign="top" align="right" />
-              <Bar yAxisId="left" dataKey="ROI" fill={CAPEX} radius={[4,4,0,0]} />
-              <Line yAxisId="right" type="monotone" dataKey="Payback" stroke={OPEX} strokeWidth={2} dot={{ r: 3 }} />
-            </ComposedChart>
-          </ResponsiveContainer>
+        <div className="mt-4" aria-label="ROI and Payback comparison across scenarios">
+          <div className="h-[220px] md:h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={data} margin={{ left: 16, right: 24, top: 16, bottom: 24 }}>
+                <CartesianGrid stroke={gridColor} />
+                <XAxis dataKey="name" stroke={axisColor} tick={{ fill: axisColor, fontSize: 12 }} interval={0} />
+                <YAxis yAxisId="left" stroke={axisColor} domain={[0, 100]} tick={{ fill: axisColor, fontSize: 12 }} tickFormatter={(v)=> `${v}%`} />
+                <YAxis yAxisId="right" orientation="right" stroke={axisColor} domain={[0, 10]} tick={{ fill: axisColor, fontSize: 12 }} tickFormatter={(v)=> formatYears(v as number, 1)} />
+                <Tooltip content={({ active, payload, label }: any) => {
+                  if(!active || !payload?.length) return null;
+                  const roi = payload.find((p:any)=> p.dataKey==='ROI');
+                  const pb = payload.find((p:any)=> p.dataKey==='Payback');
+                  return (
+                    <div className="rounded-lg border border-white/10 bg-ink-700 p-3 text-text-base shadow-lg">
+                      <div className="font-semibold text-text-hi mb-1">{label}</div>
+                      {roi && (
+                        <div className="text-sm flex items-center gap-2">
+                          <span className="inline-block h-2 w-2 rounded-full" style={{ background: '#9FE870' }} />
+                          <span className="opacity-80 w-20">ROI</span>
+                          <span>{(roi.value as number).toFixed(1)}%</span>
+                        </div>
+                      )}
+                      {pb && (
+                        <div className="text-sm flex items-center gap-2">
+                          <span className="inline-block h-2 w-2 rounded-full" style={{ background: '#4FC3F7' }} />
+                          <span className="opacity-80 w-20">Payback</span>
+                          <span>{formatYears(pb.value as number, 1)}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }} />
+                <Legend wrapperStyle={{ fontSize: 12, color: axisColor }} verticalAlign="top" align="right" />
+                <Bar yAxisId="left" dataKey="ROI" fill="#9FE870" barSize={18} radius={[4,4,0,0]} />
+                <Line yAxisId="right" type="monotone" dataKey="Payback" stroke="#4FC3F7" strokeWidth={2} dot={{ r: 5 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
     </div>
