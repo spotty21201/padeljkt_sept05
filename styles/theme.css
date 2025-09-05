@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 :root {
+  /* Unified header tokens */
+  --fg: #E7EAF0;
+  --fg-muted: #B6BEC9;
+  --card: #141820;
+  --header-bg: #0E1218;
+  --accent: #B6FF3B;
+
   --padel-green: #DFFF00; /* accent */
   --ink-900: #0A0A0A;     /* app bg */
   --ink-700: #151821;     /* card bg */
