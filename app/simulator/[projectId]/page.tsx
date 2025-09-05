@@ -12,6 +12,7 @@ import { ScenarioManager } from "@/components/ScenarioManager";
 import { useScenarioStore } from "@/lib/store/scenarioStore";
 import { encodeScenarioToParam, decodeScenarioParam } from "@/lib/util/share";
 import type { Scenario } from "@/lib/types";
+import { ComparePicker } from "@/components/ComparePicker";
 
 export default function SimulatorPage(){
   const { scenarios, activeId, update, addNew } = useScenarioStore();
@@ -42,6 +43,8 @@ export default function SimulatorPage(){
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-semibold">PadelJKT — {active.name}</h1>
+      <p className="text-sm text-muted-300">Predictive design &amp; yield analysis for padel venues</p>
+      <p className="text-sm text-muted-300">Model your padel club in minutes. Start from realistic defaults, then tune to match your land and strategy. Export a board-ready summary.</p>
 
       <ScenarioManager />
 
@@ -104,7 +107,10 @@ export default function SimulatorPage(){
         }}>Share Link</button>
       </div>
 
-      <ScenarioCompare scenarios={scenarios.slice(0,3).map(s=> ({ name: s.name, s }))} />
+      <ComparePicker />
+      <ScenarioCompare scenarios={(useScenarioStore.getState().selectedCompareIds.length>0
+        ? useScenarioStore.getState().selectedCompareIds.map(id=> scenarios.find(s=> s.id===id)).filter(Boolean) as Scenario[]
+        : scenarios.slice(0,3)).map(s=> ({ name: s.name, s }))} />
     </div>
   );
 }
