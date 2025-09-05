@@ -67,7 +67,7 @@ export function Report({ scenario, results, exportedAtISO, options }: { scenario
             <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>ROI vs Courts</div>
             <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
               <div style={{ height: 300, padding: 12 }}>
-                <RoiVsCourtsChart data={results.charts.roiVsCourts} current={scenario.courts.courts} variant="light" tickSize={11} />
+                <RoiVsCourtsChart data={results.charts.roiVsCourts} current={scenario.courts.courts} variant="light" tickSize={11} monochrome={true} />
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@ export function Report({ scenario, results, exportedAtISO, options }: { scenario
             <div style={{ fontSize: 12, color:'#6B7280', marginBottom: 8 }}>Payback Timeline</div>
             <div style={{ background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:12 }}>
               <div style={{ height: 300, padding: 12 }}>
-                <PaybackTimelineChart data={results.charts.bepTimeline} bepYear={results.charts.bepYear} variant="light" tickSize={11} />
+                <PaybackTimelineChart data={results.charts.bepTimeline} bepYear={results.charts.bepYear} variant="light" tickSize={11} monochrome={true} />
               </div>
             </div>
           </div>
@@ -96,8 +96,8 @@ export function Report({ scenario, results, exportedAtISO, options }: { scenario
                   <YAxis yAxisId="right" orientation="right" domain={[0, 10]} stroke="#6B7280" tick={{ fill: '#6B7280', fontSize: 12 }} tickFormatter={(v)=> formatYears(v as number, 1)} />
                   <Tooltip contentStyle={{ background: "#ffffff", border: "1px solid #E5E7EB", color: "#1B1F27" }} />
                   <Legend wrapperStyle={{ fontSize: 12, color: '#6B7280' }} verticalAlign="top" align="right" />
-                  <Bar yAxisId="left" dataKey="ROI" fill="#9FE870" barSize={18} radius={[4,4,0,0]} />
-                  <Line yAxisId="right" type="monotone" dataKey="Payback" stroke="#4FC3F7" strokeWidth={2} dot={{ r: 4 }} />
+                  <Bar yAxisId="left" dataKey="ROI" fill="#2F2F2F" barSize={18} radius={[4,4,0,0]} />
+                  <Line yAxisId="right" type="monotone" dataKey="Payback" stroke="#6B7280" strokeWidth={2} dot={{ r: 4 }} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>

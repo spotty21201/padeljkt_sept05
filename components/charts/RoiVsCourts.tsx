@@ -2,9 +2,9 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceDot, ReferenceLine, Area, Label } from "recharts";
 import { formatPct } from "@/lib/format/format";
 
-type Props = { data:{ courts:number; roi:number }[]; current:number; variant?: "dark"|"light"; tickSize?: number };
+type Props = { data:{ courts:number; roi:number }[]; current:number; variant?: "dark"|"light"; tickSize?: number; monochrome?: boolean };
 
-export function RoiVsCourtsChart({ data, current, variant="dark", tickSize=12 }: Props){
+export function RoiVsCourtsChart({ data, current, variant="dark", tickSize=12, monochrome=false }: Props){
   const formatted = data.map(d=> ({ courts: d.courts, roiPct: +(d.roi*100).toFixed(1) }));
   const currentPoint = formatted.find(d=> d.courts === current);
   const maxCourts = Math.max(...formatted.map(d=> d.courts), 1);
@@ -28,11 +28,11 @@ export function RoiVsCourtsChart({ data, current, variant="dark", tickSize=12 }:
           <XAxis dataKey="courts" stroke={axisColor} domain={xDomain} tick={{ fill: axisColor, fontSize: tickSize }} allowDecimals={false} />
           <YAxis stroke={axisColor} domain={[0, niceMax]} tick={{ fill: axisColor, fontSize: tickSize }} tickFormatter={(v)=> formatPct(v/100)} />
           <Tooltip contentStyle={{ background: "#151821", border: "1px solid rgba(255,255,255,0.1)", color: "#EDEEF0" }} formatter={(v)=> [`${(v as number).toFixed(1)}%`,`ROI`]} labelFormatter={(l)=> `Courts: ${l}`} />
-          <Area type="monotone" dataKey="roiPct" stroke="none" fill="#B6FF3B" fillOpacity={0.08} />
-          <Line type="monotone" dataKey="roiPct" stroke="#B6FF3B" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5, stroke: "#B6FF3B", strokeWidth: 1 }} />
+          <Area type="monotone" dataKey="roiPct" stroke="none" fill={monochrome? "#111111" : "#B6FF3B"} fillOpacity={0.08} />
+          <Line type="monotone" dataKey="roiPct" stroke={monochrome? "#111111" : "#B6FF3B"} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5, stroke: monochrome? "#111111":"#B6FF3B", strokeWidth: 1 }} />
           {currentPoint && (
             <>
-              <ReferenceDot x={currentPoint.courts} y={currentPoint.roiPct} r={5} fill="#B6FF3B" stroke="#0A0A0A" />
+              <ReferenceDot x={currentPoint.courts} y={currentPoint.roiPct} r={5} fill={monochrome? "#111111" : "#B6FF3B"} stroke="#0A0A0A" />
               <ReferenceLine x={current} stroke={axisColor} strokeDasharray="3 3" label={{ value: "Current", fill: axisColor, fontSize: 11, position: "top" }} />
             </>
           )}
