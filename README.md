@@ -1,172 +1,153 @@
-## PadelJKT FS Engine
+# PadelJKT FS Engine
 
-Predictive ROI and feasibility modeling for padel clubs. Operators and investors can model site assumptions, compare scenarios, and export board‑ready reports (PDF/XLS) in seconds.
+**PadelJKT FS Engine** is a **feasibility and ROI modeling tool** for padel clubs.
+It helps **landowners, operators, and investors** quickly test site assumptions, compare business scenarios, and generate board-ready financial reports — without spreadsheets or guesswork.
 
-Live stack: Next.js App Router + TypeScript + Tailwind + Zustand + Recharts + jsPDF + ExcelJS.
+👉 [Live Demo (Vercel)](https://padeljkt-sept05.vercel.app/simulator/sample)
 
-—
+---
 
-## Contents
+## 🎯 Problem & Goal
 
-- What it does
-- Demo screenshots (optional)
-- Quickstart
-- Development & scripts
-- Project structure
-- Domain model & calculators
-- Charts & exports
-- Design system
-- Deployment (Vercel)
-- Troubleshooting
+Padel is booming, but planning a new club is risky:
 
-—
+* How many courts fit on a given site?
+* What ROI can be expected with certain fees, occupancy, and F\&B strategy?
+* How long until the investment pays back?
+* How do we compare multiple sites side-by-side?
+* How do we communicate results to investors in a clear, board-ready format?
 
-## What it does
+**Traditional approach:** messy spreadsheets, hard to visualize, error-prone.
+**PadelJKT FS Engine’s goal:** provide a **fast, visual, reliable tool** for feasibility and ROI modeling that reduces risk and accelerates decisions.
 
-- Capture site & ratios, courts, revenues, CAPEX/OPEX inputs.
-- Compute EBITDA, ROI, payback; guardrails for feasibility.
-- Manage multiple scenarios (localStorage); compare 2–3 side‑by‑side.
-- Visualize: ROI vs Courts, Payback Timeline, Scenario Compare.
-- Export: PDF (board‑ready, light theme, grayscale charts) and XLS (formulas).
+---
 
-—
+## ✅ What It Does
 
-## Quickstart
+* **Capture assumptions**: site & land ratios, courts, revenues, CAPEX, OPEX.
+* **Compute outcomes**: EBITDA, ROI, payback years, feasibility guardrails.
+* **Visualize instantly**:
 
-Prereqs: Node 20+, pnpm via Corepack.
+  * ROI vs Courts curve
+  * Payback timeline (breakeven marker)
+  * Scenario comparison (CAPEX/OPEX/Revenue + outcomes)
+* **Manage scenarios**: save multiple projects locally; compare 2–3 side-by-side.
+* **Export**: board-ready **PDF** and **XLS** with formulas for further work.
+* **Share**: encoded links for quick scenario sharing.
 
-```
+---
+
+## 🖼 Screenshots
+
+(Add 2–3 screenshots here: main dashboard, charts, PDF export preview)
+
+---
+
+## 🚀 Quickstart
+
+**Prerequisites:** Node 20+, pnpm (via Corepack)
+
+```bash
 corepack enable
-pnpm i
+pnpm install
 pnpm dev
 # open http://localhost:3000
 ```
 
-Production run:
+Production build:
 
-```
+```bash
 pnpm build
 pnpm start
 ```
 
-—
+---
 
-## Development & scripts
+## 🛠 Tech Stack
 
-Common scripts:
+* **Frontend**: Next.js App Router, React 18, TypeScript
+* **State**: Zustand (persist + hydration guards)
+* **UI**: Tailwind CSS, custom tokens (dark + padel-green theme)
+* **Charts**: Recharts
+* **Exports**: jsPDF + html2canvas (PDF), ExcelJS (XLS)
+* **Hosting**: Vercel
 
-```
-pnpm dev            # local dev (Next.js)
-pnpm build          # production build
-pnpm start          # serve .next
-pnpm typecheck      # TS only
-```
+---
 
-Codespaces: open the repo → dependencies install automatically via devcontainer. 
-
-—
-
-## Project structure
+## 📂 Project Structure
 
 ```
-app/
-  page.tsx                             # redirects to simulator
-  api/export/pdf/route.ts              # minimal server pdf route (Node runtime)
-  api/export/xls/route.ts              # XLS (ExcelJS)
-  simulator/[projectId]/page.tsx       # main simulator
-components/
-  charts/*                             # Recharts components
-  ui/AppHeader.tsx                     # unified header
-  ui/SectionHeading.tsx                # section headers w/ keyline
-  forms/*                              # Site, Courts, Revenue, CAPEX, OPEX forms
-  inputs/*                             # MoneyInput, RatioSliders
-lib/
-  calc/model.ts                        # pure calculation engine
-  calc/presets.ts                      # sample scenario preset
-  format/currency.ts                   # IDR short units (rb/jt/M)
-  format/format.ts                     # formatIDR/formatPct/formatYears helpers
-  pdf/Report.tsx                       # board-ready PDF report component (light theme)
-  pdf/generate.tsx                     # html2canvas + jsPDF pipeline (off-screen render)
-  store/scenarioStore.ts               # Zustand store (persist + hydration guards)
-  util/share.ts                        # share-link encode/decode (?s=<b64url>)
-styles/theme.css                       # tokens & utilities
-tailwind.config.ts                     # design tokens (ink/text/accent)
+app/                  # Next.js routes (simulator, API exports)
+components/           # UI + chart components
+lib/                  # calc engine, formatting, store, pdf generator
+public/               # static assets (logo, images)
+styles/               # Tailwind + tokens
+types/                # domain types
 ```
 
-—
+---
 
-## Domain model & calculators
+## 📊 Domain Model & Calculators
 
-Core types: `lib/types.ts`
+* ROI vs Courts considers land efficiency (\~250 sqm/court).
+* CAPEX includes working capital, branding, fit-outs.
+* OPEX feeds into EBITDA and ROI/payback.
+* Results surfaced as `charts.roiVsCourts`, `charts.bepTimeline`, `charts.bepYear`.
 
-Key functions: `lib/calc/model.ts`
+---
 
-- ROI vs Courts data respects land capacity (≈250 sqm/court) derived from `siteArea * courtsPct`.
-- OPEX preview feeds working capital in CAPEX; final EBITDA computed after OPEX.
-- Results include `charts.roiVsCourts`, `charts.bepTimeline`, `charts.bepYear`.
+## 📈 Charts & Reports
 
-—
+* **ROI vs Courts**: peak annotation, current marker.
+* **Payback Timeline**: cumulative EBITDA, breakeven line.
+* **Scenario Comparison**: CAPEX/OPEX/Revenue (plus ROI & Payback).
 
-## Charts & exports
+Exports:
 
-Charts (Recharts):
+* **PDF**: A4, light theme, auto-paginated, charts in monochrome.
+* **XLS**: workbook with formulas (ExcelJS).
 
-- ROI vs Courts: peak annotation, current marker; dark UI styles.
-- Payback Timeline: cumulative cash flow with breakeven marker.
-- Scenario Comparison: CAPEX/OPEX/Revenue bars (+ optional ROI/Payback outcomes).
+---
 
-PDF (client, off‑screen render):
+## 🎨 Design System
 
-- `lib/pdf/generate.tsx` renders `lib/pdf/Report.tsx` at 1240px width, scale=2–3.
-- A4 portrait, margins L/R 24mm, T/B 20mm; auto‑paginated.
-- Light theme for print; charts in monochrome on white background.
+* **Colors**: dark ink palette + padel-green accent
+* **Typography**: Inter/system stack, high contrast for board-ready outputs
+* **Components**: SectionHeading with accent keyline, AppHeader with branding
 
-XLS (ExcelJS):
+---
 
-- `app/api/export/xls/route.ts` returns a workbook with formulas.
+## 🌐 Deployment
 
-—
+* Vercel → main branch auto-deploy
+* Build notes:
 
-## Design system
+  * `next.config.mjs` cleaned (no deprecated appDir)
+  * Tailwind glob fixed (`./styles/**/*.css`)
+  * PDF route runs in Node runtime
 
-Tailwind tokens (`tailwind.config.ts`):
+---
 
-- `ink.950/900/800/700/600` — backgrounds
-- `text.hi/base/mut` — type scales
-- `accent.400/500/600` — padel green family
-- `borders.default`, `gridlines.default`
+## 🐛 Troubleshooting
 
-Section headings use `components/ui/SectionHeading.tsx` with a subtle accent keyline.
+* **Duplicate scenarios on refresh** → fixed via hydration-aware seeding in Zustand store.
+* **Blurry charts in PDF** → html2canvas scale ≥ 2.
+* **pnpm lock issues** → `.npmrc` disables frozen lockfile on CI.
 
-—
+---
 
-## Deployment (Vercel)
+## ⚠️ Notes
 
-Vercel preset: Next.js.
+* Persistence is client-side (localStorage); no backend DB.
+* Share links encode scenarios in the URL.
+* Results are **directional models** only — validate assumptions per site.
 
-Build tips captured in repo:
+---
 
-- `next.config.mjs` has no deprecated `experimental.appDir`.
-- Tailwind content globs include `./styles/**/*.css`.
-- PDF route uses Node runtime; jsPDF dashed lines via `setLineDashPattern`.
-- `.npmrc` sets `prefer-frozen-lockfile=false` (unblocks CI if lockfile lags).
+## 🏷 Branding
 
-—
+Default logo path: `public/logo.png`.
+Replace with your **Kolabs.Design** or partner logo; it will appear in the header + PDF exports.
 
-## Troubleshooting
+---
 
-- Duplicate scenarios on refresh: fixed via hydration‑aware seeding `lib/store/scenarioStore.ts` (`hasHydrated`, `hasSeeded`).
-- Vercel frozen lockfile error: either run `pnpm i` locally to refresh `pnpm-lock.yaml`, or rely on `.npmrc` which disables frozen installs in CI.
-- Charts blurry in PDF: html2canvas scale is ≥2; ensure browser allows sufficient memory.
-
-—
-
-## Notes
-
-- Persistence: localStorage (no backend). Share links encode scenarios in the URL (`?s=...`).
-- This model is directional; validate assumptions per site.
-
-
-## Branding
-
-- Place your Kolabs.Design logo at `public/logo.png` (recommended PNG, white on transparent). The header and PDF export will pick it up automatically.
