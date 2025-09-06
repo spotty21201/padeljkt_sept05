@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf";
 import fs from "node:fs";
 import path from "node:path";
 import { calcResults } from "@/lib/calc/model";
@@ -102,10 +102,10 @@ export async function GET(req: NextRequest) {
     doc.line(map2X(pay[i-1].year), map2Y(pay[i-1].cumulative), map2X(pay[i].year), map2Y(pay[i].cumulative));
   }
   if(r.charts.bepYear){
-    doc.setDrawColor(182,255,59); doc.setLineDash([3]);
+    doc.setDrawColor(182,255,59); doc.setLineDashPattern([3], 0);
     const bx = map2X(r.charts.bepYear);
     doc.line(bx, chart2Y, bx, chart2Y+chart2H);
-    doc.setLineDash([]);
+    doc.setLineDashPattern([], 0);
   }
   y += chartH + 30;
 
@@ -118,3 +118,4 @@ export async function GET(req: NextRequest) {
   const out = doc.output("arraybuffer");
   return new NextResponse(Buffer.from(out), { headers: { "Content-Type": "application/pdf" } });
 }
+export const runtime = "nodejs";
