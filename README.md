@@ -1,8 +1,8 @@
 # PadelJKT FS Engine
 
-**PadelJKT FS Engine** is a **feasibility and ROI modeling tool** for padel clubs.
+**PadelJKT FS Engine** is a **feasibility and ROI modeling tool** for padel clubs in Jakarta.
 It helps **landowners, operators, and investors** quickly test site assumptions, compare business scenarios, and generate board-ready financial reports — without spreadsheets or guesswork. Written by Kolabs.Design (Doddy Samiaji with researchers/designers from HDA.Design: Dwi Anjani, Anita Septafiani, Annisha Ayuningdiah.
-👉 [Live Demo (Vercel)](https://padeljkt-sept05.vercel.app/simulator/sample)
+
 
 ---
 
